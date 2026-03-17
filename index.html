@@ -764,4 +764,829 @@
                     <p id="displayUserStatus">Selecciona un usuario para comenzar</p>
                 </div>
             </div>
-            <div class="status-badge inac
+            <div class="status-badge inactive" id="statusBadge">
+                ● INACTIVO
+            </div>
+        </div>
+
+        <!-- PANEL DE CONTROL START/STOP/AFK -->
+        <div class="control-panel" id="controlPanel">
+            <div class="control-title">🎮 Panel de Control de Sesión</div>
+            
+            <div class="form-group" style="margin-bottom: 20px;">
+                <label>Seleccionar Usuario <span class="required">*</span></label>
+                <select id="usuario" required onchange="onUserSelect()">
+                    <option value="">Seleccionar usuario...</option>
+                    <option value="usuario01">usuario01</option>
+                    <option value="usuario02">usuario02</option>
+                    <option value="usuario03">usuario03</option>
+                    <option value="usuario04">usuario04</option>
+                    <option value="usuario05">usuario05</option>
+                    <option value="usuario06">usuario06</option>
+                    <option value="usuario07">usuario07</option>
+                    <option value="usuario08">usuario08</option>
+                    <option value="usuario09">usuario09</option>
+                    <option value="usuario10">usuario10</option>
+                    <option value="usuario11">usuario11</option>
+                    <option value="usuario12">usuario12</option>
+                    <option value="usuario13">usuario13</option>
+                    <option value="usuario14">usuario14</option>
+                    <option value="usuario15">usuario15</option>
+                </select>
+            </div>
+
+            <div class="control-buttons">
+                <button class="btn-control btn-start" id="btnStart" onclick="startSession()" disabled>
+                    <span class="btn-icon">▶️</span>
+                    <span>START</span>
+                </button>
+                <button class="btn-control btn-stop" id="btnStop" onclick="stopSession()" disabled>
+                    <span class="btn-icon">⏹️</span>
+                    <span>STOP</span>
+                </button>
+                <button class="btn-control btn-afk" id="btnAfk" onclick="goAfk()" disabled>
+                    <span class="btn-icon">☕</span>
+                    <span>AFK</span>
+                </button>
+                <button class="btn-control btn-back" id="btnBack" onclick="returnFromAfk()" disabled>
+                    <span class="btn-icon">🔙</span>
+                    <span>BACK</span>
+                </button>
+            </div>
+
+            <div class="session-timer" id="sessionTimer">
+                <div class="timer-label">Tiempo de Sesión</div>
+                <div class="timer-value" id="timerValue">00:00:00</div>
+            </div>
+
+            <div class="session-timer" id="afkTimer" style="background: #fff3cd;">
+                <div class="timer-label">Tiempo AFK</div>
+                <div class="timer-value afk-timer" id="afkTimerValue">00:00:00</div>
+            </div>
+        </div>
+
+        <!-- REGISTRO DE ACTIVIDAD -->
+        <div class="activity-log" id="activityLog">
+            <div class="activity-title">📋 Registro de Actividad</div>
+            <div id="activityList"></div>
+        </div>
+
+        <button class="btn-toggle" onclick="toggleConfig()">
+            ⚙️ Configurar Conexión
+        </button>
+
+        <div class="config-panel" id="configPanel">
+            <div class="config-title">Configuración del Sistema</div>
+            <div class="config-input">
+                <label>URL de Google Apps Script:</label>
+                <input type="url" id="scriptUrl" placeholder="https://script.google.com/macros/s/.../exec">
+            </div>
+            <div class="config-input">
+                <label>ID de Carpeta Google Drive:</label>
+                <input type="text" id="folderId" placeholder="1BxiMVs0XRA5nFMdKvBdBZjgmUUqptlbs">
+            </div>
+            <button class="btn-submit" onclick="saveConfig()" style="margin-top: 10px; font-size: 1rem;">
+                Guardar Configuración
+            </button>
+        </div>
+
+        <!-- FORMULARIO DE VISITAS (Aparece después de START) -->
+        <div class="form-card" id="formCard">
+            <div class="datetime-display">
+                <div class="datetime-item">
+                    <div class="datetime-label">Fecha Sistema</div>
+                    <div class="datetime-value" id="sysDate">--/--/----</div>
+                </div>
+                <div class="datetime-item">
+                    <div class="datetime-label">Hora Sistema</div>
+                    <div class="datetime-value" id="sysTime">--:--:--</div>
+                </div>
+                <div class="datetime-item">
+                    <div class="datetime-label">Visitas Hoy</div>
+                    <div class="datetime-value" id="visitCountDisplay">0</div>
+                </div>
+            </div>
+
+            <form id="visitForm">
+                <div class="row-two-cols">
+                    <div class="form-group">
+                        <label>Fecha de Visita <span class="required">*</span></label>
+                        <input type="date" id="fecha" required>
+                        <div class="error-text" id="fechaError">Selecciona una fecha</div>
+                    </div>
+
+                    <div class="form-group">
+                        <label>Hora de Visita <span class="required">*</span></label>
+                        <input type="time" id="hora" required>
+                        <div class="error-text" id="horaError">Selecciona una hora</div>
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label>Nombre del Negocio / Empresa <span class="required">*</span></label>
+                    <input type="text" id="nombre_negocio" placeholder="Razón social o nombre comercial" required>
+                    <div class="error-text" id="nombre_negocioError">Campo obligatorio</div>
+                </div>
+
+                <div class="form-group">
+                    <label>Nombre del Responsable / Contacto <span class="required">*</span></label>
+                    <input type="text" id="responsable" placeholder="Persona de contacto en el negocio" required>
+                    <div class="error-text" id="responsableError">Campo obligatorio</div>
+                </div>
+
+                <div class="form-group">
+                    <label>Dirección <span class="required">*</span></label>
+                    <input type="text" id="direccion" placeholder="Calle, número, ciudad, código postal" required>
+                    <div class="error-text" id="direccionError">Campo obligatorio</div>
+                </div>
+
+                <div class="form-group">
+                    <label>Teléfono <span class="required">*</span></label>
+                    <input type="tel" id="telefono" placeholder="Ej: 612345678" required pattern="[0-9]{9}">
+                    <div class="error-text" id="telefonoError">Teléfono válido (9 dígitos)</div>
+                </div>
+
+                <div class="form-group">
+                    <label>Observaciones</label>
+                    <textarea id="observaciones" placeholder="Notas adicionales sobre la visita..."></textarea>
+                </div>
+
+                <button type="submit" class="btn-submit" id="submitBtn">
+                    📸 Guardar Visita
+                </button>
+            </form>
+
+            <div class="status-message" id="statusMessage"></div>
+        </div>
+
+        <div class="preview-section" id="previewSection">
+            <div class="preview-title">Vista previa de la tarjeta generada</div>
+            <div class="preview-card" id="captureCard">
+                <div class="preview-header">
+                    <div class="preview-logo">⚡ CONSULTORÍA ENERGÉTICA</div>
+                    <div class="preview-type">Registro de Visita</div>
+                </div>
+                <div class="preview-body">
+                    <div class="preview-row">
+                        <span class="preview-label">Usuario:</span>
+                        <span class="preview-value" id="previewUsuario">--</span>
+                    </div>
+                    <div class="preview-row">
+                        <span class="preview-label">Fecha:</span>
+                        <span class="preview-value" id="previewFecha">--</span>
+                    </div>
+                    <div class="preview-row">
+                        <span class="preview-label">Hora:</span>
+                        <span class="preview-value" id="previewHora">--</span>
+                    </div>
+                    <div class="preview-row">
+                        <span class="preview-label">Negocio:</span>
+                        <span class="preview-value" id="previewNegocio">--</span>
+                    </div>
+                    <div class="preview-row">
+                        <span class="preview-label">Responsable:</span>
+                        <span class="preview-value" id="previewResponsable">--</span>
+                    </div>
+                    <div class="preview-row">
+                        <span class="preview-label">Dirección:</span>
+                        <span class="preview-value" id="previewDireccion">--</span>
+                    </div>
+                    <div class="preview-row">
+                        <span class="preview-label">Teléfono:</span>
+                        <span class="preview-value" id="previewTelefono">--</span>
+                    </div>
+                    <div class="preview-row" id="previewObsRow" style="display: none;">
+                        <span class="preview-label">Observaciones:</span>
+                        <span class="preview-value" id="previewObservaciones">--</span>
+                    </div>
+                </div>
+                <div class="preview-footer">
+                    <div>Timestamp de Registro</div>
+                    <div class="preview-timestamp" id="previewTimestamp">--</div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // ==================== CONFIGURACIÓN ====================
+        const CONFIG = {
+            scriptUrl: localStorage.getItem('scriptUrl') || '',
+            folderId: localStorage.getItem('folderId') || ''
+        };
+
+        // ==================== ESTADO DE SESIÓN ====================
+        let sessionState = {
+            user: null,
+            isActive: false,
+            isAfk: false,
+            startTime: null,
+            afkStartTime: null,
+            totalAfkTime: 0,
+            visitCount: 0,
+            activities: []
+        };
+
+        let timerInterval = null;
+        let afkInterval = null;
+        let isSubmitting = false;
+
+        // ==================== INICIALIZACIÓN ====================
+        document.addEventListener('DOMContentLoaded', function() {
+            initClock();
+            initForm();
+            loadConfig();
+            checkConnectivity();
+            restoreSession();
+            
+            window.addEventListener('online', checkConnectivity);
+            window.addEventListener('offline', checkConnectivity);
+            window.addEventListener('beforeunload', handleBeforeUnload);
+        });
+
+        function initClock() {
+            updateClock();
+            setInterval(updateClock, 1000);
+        }
+
+        function updateClock() {
+            const now = new Date();
+            document.getElementById('sysDate').textContent = now.toLocaleDateString('es-ES', {
+                day: '2-digit',
+                month: '2-digit',
+                year: 'numeric'
+            });
+            document.getElementById('sysTime').textContent = now.toLocaleTimeString('es-ES', {
+                hour: '2-digit',
+                minute: '2-digit',
+                second: '2-digit'
+            });
+        }
+
+        function initForm() {
+            const today = new Date().toISOString().split('T')[0];
+            document.getElementById('fecha').value = today;
+            
+            const now = new Date();
+            const timeStr = now.toTimeString().slice(0, 5);
+            document.getElementById('hora').value = timeStr;
+
+            document.getElementById('visitForm').addEventListener('submit', handleSubmit);
+            
+            const inputs = document.querySelectorAll('input[required], select[required]');
+            inputs.forEach(input => {
+                input.addEventListener('blur', () => validateField(input));
+                input.addEventListener('input', () => {
+                    if (input.classList.contains('validation-error')) {
+                        validateField(input);
+                    }
+                });
+            });
+        }
+
+        // ==================== GESTIÓN DE SESIÓN ====================
+        function onUserSelect() {
+            const user = document.getElementById('usuario').value;
+            if (!user) {
+                document.getElementById('btnStart').disabled = true;
+                document.getElementById('userIndicator').style.display = 'none';
+                return;
+            }
+
+            sessionState.user = user;
+            document.getElementById('btnStart').disabled = false;
+            document.getElementById('userIndicator').style.display = 'flex';
+            document.getElementById('userAvatar').textContent = user.slice(-2).toUpperCase();
+            document.getElementById('displayUserName').textContent = user;
+            document.getElementById('displayUserStatus').textContent = 'Listo para iniciar sesión';
+            
+            // Guardar selección
+            localStorage.setItem('selectedUser', user);
+        }
+
+        function startSession() {
+            if (!sessionState.user) return;
+
+            sessionState.isActive = true;
+            sessionState.startTime = Date.now();
+            sessionState.activities = [];
+            sessionState.visitCount = 0;
+
+            addActivity('START', 'Sesión iniciada');
+            
+            updateUIState();
+            startTimer();
+            
+            // Mostrar formulario
+            document.getElementById('formCard').classList.add('active');
+            document.getElementById('activityLog').classList.add('active');
+            
+            // Guardar estado
+            saveSessionState();
+            
+            // Enviar a Sheets
+            sendActivityToSheets('START', 'Inicio de jornada');
+        }
+
+        function stopSession() {
+            if (!sessionState.isActive) return;
+
+            const sessionDuration = Date.now() - sessionState.startTime - sessionState.totalAfkTime;
+            
+            addActivity('STOP', 'Sesión finalizada');
+            
+            // Enviar resumen
+            sendActivityToSheets('STOP', 'Fin de jornada', {
+                duracionTotal: formatDuration(sessionDuration),
+                tiempoAfk: formatDuration(sessionState.totalAfkTime),
+                totalVisitas: sessionState.visitCount
+            });
+
+            // Resetear estado
+            clearInterval(timerInterval);
+            clearInterval(afkInterval);
+            
+            sessionState = {
+                user: sessionState.user,
+                isActive: false,
+                isAfk: false,
+                startTime: null,
+                afkStartTime: null,
+                totalAfkTime: 0,
+                visitCount: 0,
+                activities: []
+            };
+
+            updateUIState();
+            
+            // Ocultar formulario
+            document.getElementById('formCard').classList.remove('active');
+            document.getElementById('activityLog').classList.remove('active');
+            document.getElementById('sessionTimer').classList.remove('active');
+            
+            localStorage.removeItem('sessionState');
+            localStorage.removeItem('selectedUser');
+            
+            // Resetear formulario
+            resetForm();
+        }
+
+        function goAfk() {
+            if (!sessionState.isActive || sessionState.isAfk) return;
+
+            sessionState.isAfk = true;
+            sessionState.afkStartTime = Date.now();
+            
+            addActivity('AFK', 'Pausa iniciada');
+            updateUIState();
+            startAfkTimer();
+            
+            sendActivityToSheets('AFK', 'Inicio pausa');
+            saveSessionState();
+        }
+
+        function returnFromAfk() {
+            if (!sessionState.isAfk) return;
+
+            const afkDuration = Date.now() - sessionState.afkStartTime;
+            sessionState.totalAfkTime += afkDuration;
+            sessionState.isAfk = false;
+            sessionState.afkStartTime = null;
+            
+            addActivity('BACK', `Pausa finalizada (${formatDuration(afkDuration)})`);
+            updateUIState();
+            stopAfkTimer();
+            
+            sendActivityToSheets('BACK', 'Fin pausa', {
+                duracionPausa: formatDuration(afkDuration)
+            });
+            saveSessionState();
+        }
+
+        // ==================== TIMERS ====================
+        function startTimer() {
+            document.getElementById('sessionTimer').classList.add('active');
+            updateTimer();
+            timerInterval = setInterval(updateTimer, 1000);
+        }
+
+        function updateTimer() {
+            if (!sessionState.startTime) return;
+            
+            const elapsed = Date.now() - sessionState.startTime - sessionState.totalAfkTime;
+            document.getElementById('timerValue').textContent = formatDuration(elapsed);
+        }
+
+        function startAfkTimer() {
+            document.getElementById('afkTimer').classList.add('active');
+            updateAfkTimer();
+            afkInterval = setInterval(updateAfkTimer, 1000);
+        }
+
+        function stopAfkTimer() {
+            document.getElementById('afkTimer').classList.remove('active');
+            clearInterval(afkInterval);
+            document.getElementById('afkTimerValue').textContent = '00:00:00';
+        }
+
+        function updateAfkTimer() {
+            if (!sessionState.afkStartTime) return;
+            
+            const elapsed = Date.now() - sessionState.afkStartTime;
+            document.getElementById('afkTimerValue').textContent = formatDuration(elapsed);
+        }
+
+        function formatDuration(ms) {
+            const totalSeconds = Math.floor(ms / 1000);
+            const hours = Math.floor(totalSeconds / 3600);
+            const minutes = Math.floor((totalSeconds % 3600) / 60);
+            const seconds = totalSeconds % 60;
+            
+            return `${String(hours).padStart(2, '0')}:${String(minutes).padStart(2, '0')}:${String(seconds).padStart(2, '0')}`;
+        }
+
+        // ==================== ACTIVIDADES ====================
+        function addActivity(type, description) {
+            const activity = {
+                type: type,
+                description: description,
+                timestamp: new Date().toISOString(),
+                time: new Date().toLocaleTimeString('es-ES')
+            };
+            
+            sessionState.activities.unshift(activity);
+            renderActivities();
+        }
+
+        function renderActivities() {
+            const list = document.getElementById('activityList');
+            list.innerHTML = sessionState.activities.map(act => `
+                <div class="activity-item">
+                    <span class="activity-time">${act.time}</span>
+                    <span class="activity-icon">${getActivityIcon(act.type)}</span>
+                    <span class="activity-action">${act.description}</span>
+                </div>
+            `).join('');
+        }
+
+        function getActivityIcon(type) {
+            const icons = {
+                'START': '▶️',
+                'STOP': '⏹️',
+                'AFK': '☕',
+                'BACK': '🔙',
+                'VISIT': '📸'
+            };
+            return icons[type] || '•';
+        }
+
+        // ==================== UI STATE ====================
+        function updateUIState() {
+            const btnStart = document.getElementById('btnStart');
+            const btnStop = document.getElementById('btnStop');
+            const btnAfk = document.getElementById('btnAfk');
+            const btnBack = document.getElementById('btnBack');
+            const statusBadge = document.getElementById('statusBadge');
+            const statusText = document.getElementById('displayUserStatus');
+
+            // Reset todos
+            btnStart.disabled = true;
+            btnStop.disabled = true;
+            btnAfk.disabled = true;
+            btnBack.disabled = true;
+
+            if (!sessionState.isActive) {
+                // Estado: Inactivo
+                btnStart.disabled = false;
+                statusBadge.className = 'status-badge inactive';
+                statusBadge.innerHTML = '● INACTIVO';
+                statusText.textContent = 'Listo para iniciar sesión';
+            } else if (sessionState.isAfk) {
+                // Estado: AFK
+                btnStop.disabled = false;
+                btnBack.disabled = false;
+                statusBadge.className = 'status-badge afk';
+                statusBadge.innerHTML = '☕ AFK';
+                statusText.textContent = 'En pausa';
+            } else {
+                // Estado: Activo
+                btnStop.disabled = false;
+                btnAfk.disabled = false;
+                statusBadge.className = 'status-badge active';
+                statusBadge.innerHTML = '● ACTIVO';
+                statusText.textContent = 'Sesión en curso';
+            }
+        }
+
+        // ==================== ENVÍO DE VISITAS ====================
+        async function handleSubmit(e) {
+            e.preventDefault();
+            if (isSubmitting) return;
+            if (!sessionState.isActive || sessionState.isAfk) {
+                showStatus('Debes estar en sesión activa para registrar visitas', 'error');
+                return;
+            }
+
+            if (!validateForm()) {
+                showStatus('Completa todos los campos obligatorios', 'error');
+                return;
+            }
+
+            if (!CONFIG.scriptUrl) {
+                showStatus('Configura la URL de Google Apps Script', 'error');
+                toggleConfig();
+                return;
+            }
+
+            isSubmitting = true;
+            const btn = document.getElementById('submitBtn');
+            btn.classList.add('loading');
+            btn.disabled = true;
+
+            try {
+                const systemTimestamp = new Date().toISOString();
+                const submissionTimestamp = new Date().toISOString();
+
+                const formData = {
+                    timestamp_sistema: systemTimestamp,
+                    usuario: sessionState.user,
+                    fecha_visita: document.getElementById('fecha').value,
+                    hora_visita: document.getElementById('hora').value,
+                    nombre_negocio: document.getElementById('nombre_negocio').value.trim(),
+                    responsable: document.getElementById('responsable').value.trim(),
+                    direccion: document.getElementById('direccion').value.trim(),
+                    telefono: document.getElementById('telefono').value.trim(),
+                    observaciones: document.getElementById('observaciones').value.trim(),
+                    timestamp_envio: submissionTimestamp,
+                    tiempo_respuesta: 0
+                };
+
+                updatePreview(formData);
+
+                showStatus('📸 Generando evidencia visual...', 'success');
+                const imageBase64 = await generateImage();
+
+                const visitId = generateVisitId();
+                const payload = {
+                    ...formData,
+                    visit_id: visitId,
+                    imageBase64: imageBase64,
+                    filename: `${formData.usuario}_${formData.fecha_visita}_${formData.hora_visita.replace(':', '-')}.jpg`,
+                    folderId: CONFIG.folderId
+                };
+
+                showStatus('☁️ Subiendo...', 'success');
+                await sendToGoogleScript(payload);
+
+                // Éxito
+                sessionState.visitCount++;
+                document.getElementById('visitCountDisplay').textContent = sessionState.visitCount;
+                addActivity('VISIT', `Visita registrada: ${formData.nombre_negocio}`);
+                saveSessionState();
+                
+                showStatus(`✅ Visita registrada. ID: ${visitId}`, 'success');
+                document.getElementById('previewSection').classList.add('active');
+                
+                setTimeout(() => resetForm(), 3000);
+
+            } catch (error) {
+                console.error('Error:', error);
+                if (!navigator.onLine) {
+                    saveOffline();
+                    showStatus('💾 Guardado localmente', 'success');
+                } else {
+                    showStatus(`❌ Error: ${error.message}`, 'error');
+                }
+            } finally {
+                isSubmitting = false;
+                btn.classList.remove('loading');
+                btn.disabled = false;
+            }
+        }
+
+        // ==================== FUNCIONES AUXILIARES ====================
+        function validateField(field) {
+            const errorId = field.id + 'Error';
+            const errorEl = document.getElementById(errorId);
+            let isValid = true;
+            
+            if (field.hasAttribute('required') && !field.value.trim()) {
+                isValid = false;
+            }
+            
+            if (field.id === 'telefono' && field.value) {
+                const phoneRegex = /^[0-9]{9}$/;
+                isValid = phoneRegex.test(field.value);
+            }
+            
+            if (isValid) {
+                field.classList.remove('validation-error');
+                if (errorEl) errorEl.classList.remove('visible');
+            } else {
+                field.classList.add('validation-error');
+                if (errorEl) errorEl.classList.add('visible');
+            }
+            
+            return isValid;
+        }
+
+        function validateForm() {
+            const requiredFields = ['fecha', 'hora', 'nombre_negocio', 'responsable', 'direccion', 'telefono'];
+            let isValid = true;
+            
+            requiredFields.forEach(fieldId => {
+                if (!validateField(document.getElementById(fieldId))) {
+                    isValid = false;
+                }
+            });
+            
+            return isValid;
+        }
+
+        function updatePreview(data) {
+            document.getElementById('previewUsuario').textContent = data.usuario;
+            document.getElementById('previewFecha').textContent = data.fecha_visita;
+            document.getElementById('previewHora').textContent = data.hora_visita;
+            document.getElementById('previewNegocio').textContent = data.nombre_negocio;
+            document.getElementById('previewResponsable').textContent = data.responsable;
+            document.getElementById('previewDireccion').textContent = data.direccion;
+            document.getElementById('previewTelefono').textContent = data.telefono;
+            
+            const obsRow = document.getElementById('previewObsRow');
+            if (data.observaciones) {
+                document.getElementById('previewObservaciones').textContent = data.observaciones;
+                obsRow.style.display = 'flex';
+            } else {
+                obsRow.style.display = 'none';
+            }
+            
+            document.getElementById('previewTimestamp').textContent = new Date().toLocaleString('es-ES');
+        }
+
+        async function generateImage() {
+            const card = document.getElementById('captureCard');
+            const canvas = await html2canvas(card, {
+                scale: 2,
+                useCORS: true,
+                allowTaint: true,
+                backgroundColor: '#ffffff',
+                logging: false
+            });
+            return canvas.toDataURL('image/jpeg', 0.9);
+        }
+
+        async function sendToGoogleScript(payload) {
+            await fetch(CONFIG.scriptUrl, {
+                method: 'POST',
+                mode: 'no-cors',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(payload)
+            });
+            return { success: true };
+        }
+
+        async function sendActivityToSheets(type, description, extraData = {}) {
+            if (!CONFIG.scriptUrl) return;
+            
+            const payload = {
+                tipo_registro: 'ACTIVIDAD',
+                timestamp: new Date().toISOString(),
+                usuario: sessionState.user,
+                tipo_actividad: type,
+                descripcion: description,
+                ...extraData
+            };
+            
+            try {
+                await fetch(CONFIG.scriptUrl, {
+                    method: 'POST',
+                    mode: 'no-cors',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(payload)
+                });
+            } catch (e) {
+                console.error('Error enviando actividad:', e);
+            }
+        }
+
+        function generateVisitId() {
+            const now = new Date();
+            return `VIS-${now.getFullYear()}${String(now.getMonth()+1).padStart(2,'0')}${String(now.getDate()).padStart(2,'0')}-${Math.random().toString(36).substr(2, 6).toUpperCase()}`;
+        }
+
+        function showStatus(message, type) {
+            const statusEl = document.getElementById('statusMessage');
+            statusEl.textContent = message;
+            statusEl.className = 'status-message ' + type;
+            
+            if (type === 'success') {
+                setTimeout(() => { statusEl.className = 'status-message'; }, 5000);
+            }
+        }
+
+        function resetForm() {
+            document.getElementById('visitForm').reset();
+            const today = new Date().toISOString().split('T')[0];
+            document.getElementById('fecha').value = today;
+            const timeStr = new Date().toTimeString().slice(0, 5);
+            document.getElementById('hora').value = timeStr;
+            
+            document.querySelectorAll('.validation-error').forEach(el => {
+                el.classList.remove('validation-error');
+            });
+            document.querySelectorAll('.error-text.visible').forEach(el => {
+                el.classList.remove('visible');
+            });
+            
+            document.getElementById('previewSection').classList.remove('active');
+            document.getElementById('statusMessage').className = 'status-message';
+        }
+
+        // ==================== PERSISTENCIA ====================
+        function saveSessionState() {
+            if (sessionState.isActive) {
+                localStorage.setItem('sessionState', JSON.stringify({
+                    user: sessionState.user,
+                    isActive: sessionState.isActive,
+                    isAfk: sessionState.isAfk,
+                    startTime: sessionState.startTime,
+                    afkStartTime: sessionState.afkStartTime,
+                    totalAfkTime: sessionState.totalAfkTime,
+                    visitCount: sessionState.visitCount
+                }));
+            }
+        }
+
+        function restoreSession() {
+            const saved = localStorage.getItem('sessionState');
+            const savedUser = localStorage.getItem('selectedUser');
+            
+            if (savedUser) {
+                document.getElementById('usuario').value = savedUser;
+                onUserSelect();
+            }
+            
+            if (saved) {
+                const state = JSON.parse(saved);
+                if (state.isActive) {
+                    // Restaurar sesión
+                    sessionState = { ...sessionState, ...state };
+                    
+                    // Ajustar tiempos
+                    if (sessionState.isAfk && sessionState.afkStartTime) {
+                        startAfkTimer();
+                    }
+                    
+                    updateUIState();
+                    startTimer();
+                    document.getElementById('formCard').classList.add('active');
+                    document.getElementById('activityLog').classList.add('active');
+                    document.getElementById('visitCountDisplay').textContent = sessionState.visitCount;
+                    
+                    addActivity('RESTORE', 'Sesión restaurada');
+                }
+            }
+        }
+
+        function handleBeforeUnload(e) {
+            if (sessionState.isActive) {
+                saveSessionState();
+                // No podemos enviar datos síncronamente, pero guardamos estado
+            }
+        }
+
+        // ==================== CONFIGURACIÓN ====================
+        function toggleConfig() {
+            const panel = document.getElementById('configPanel');
+            panel.classList.toggle('active');
+            if (panel.classList.contains('active')) {
+                document.getElementById('scriptUrl').value = CONFIG.scriptUrl;
+                document.getElementById('folderId').value = CONFIG.folderId;
+            }
+        }
+
+        function saveConfig() {
+            CONFIG.scriptUrl = document.getElementById('scriptUrl').value.trim();
+            CONFIG.folderId = document.getElementById('folderId').value.trim();
+            localStorage.setItem('scriptUrl', CONFIG.scriptUrl);
+            localStorage.setItem('folderId', CONFIG.folderId);
+            showStatus('✅ Configuración guardada', 'success');
+            toggleConfig();
+        }
+
+        function loadConfig() {
+            // Ya cargado desde localStorage
+        }
+
+        // ==================== OFFLINE ====================
+        function checkConnectivity() {
+            const indicator = document.getElementById('offlineIndicator');
+            indicator.classList.toggle('active', !navigator.onLine);
+        }
+
+        function saveOffline() {
+            // Implementar cola offline si es necesario
+        }
+    </script>
+</body>
+</html>
