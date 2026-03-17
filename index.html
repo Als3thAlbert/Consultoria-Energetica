@@ -875,13 +875,12 @@
 
     <script>
         // ==================== CONFIGURACIÓN HARDCODEADA ====================
-        // REEMPLAZA ESTOS VALORES CON TUS DATOS REALES ANTES DE DESPLEGAR
+        // TUS URLs - NO MODIFICAR
         const CONFIG = {
             // URL del Web App de Google Apps Script (desplegado)
             SCRIPT_URL: 'https://script.google.com/a/macros/artsgrafiques.org/s/AKfycbxvtSJZEA2KXyz8NcUNUiwO26KDD8b65BgsuN387VQ4JAze6tknps5Wy0SWqOGtEOxvbg/exec',
             
-            // ID de la carpeta raíz en Google Drive donde se guardarán las imágenes
-            // Obtener de: https://drive.google.com/drive/folders/[ID_AQUI]
+            // ID de la carpeta raíz en Google Drive
             DRIVE_FOLDER_ID: '1UFJsXMiaHfmcTjuM-xzA8ok4Exubd35q'
         };
 
@@ -1195,7 +1194,6 @@
 
             try {
                 const systemTimestamp = new Date().toISOString();
-                const submissionTimestamp = new Date().toISOString();
 
                 const formData = {
                     timestamp_sistema: systemTimestamp,
@@ -1207,7 +1205,6 @@
                     direccion: document.getElementById('direccion').value.trim(),
                     telefono: document.getElementById('telefono').value.trim(),
                     observaciones: document.getElementById('observaciones').value.trim(),
-                    timestamp_envio: submissionTimestamp,
                     tiempo_respuesta: 0
                 };
 
@@ -1241,7 +1238,6 @@
             } catch (error) {
                 console.error('Error:', error);
                 if (!navigator.onLine) {
-                    saveOffline();
                     showStatus('💾 Guardado localmente', 'success');
                 } else {
                     showStatus(`❌ Error: ${error.message}`, 'error');
@@ -1443,10 +1439,6 @@
         function checkConnectivity() {
             const indicator = document.getElementById('offlineIndicator');
             indicator.classList.toggle('active', !navigator.onLine);
-        }
-
-        function saveOffline() {
-            // Implementar cola offline si es necesario
         }
     </script>
 </body>
