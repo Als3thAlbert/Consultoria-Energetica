@@ -703,6 +703,21 @@
             font-size: 0.8rem;
             color: var(--info);
         }
+
+        .debug-info {
+            background: #f8f9fa;
+            border: 1px solid #dee2e6;
+            border-radius: 8px;
+            padding: 10px;
+            margin-top: 10px;
+            font-size: 0.8rem;
+            font-family: monospace;
+            display: none;
+        }
+
+        .debug-info.active {
+            display: block;
+        }
     </style>
 </head>
 <body>
@@ -860,6 +875,9 @@
 
             <div class="status-message" id="statusMessage"></div>
 
+            <!-- Debug info -->
+            <div class="debug-info" id="debugInfo"></div>
+
             <!-- Vista previa de la imagen generada -->
             <div class="image-preview-section" id="imagePreviewSection">
                 <div class="image-preview-title">📷 Imagen generada y subida a Drive</div>
@@ -952,6 +970,9 @@
             window.addEventListener('online', checkConnectivity);
             window.addEventListener('offline', checkConnectivity);
             window.addEventListener('beforeunload', handleBeforeUnload);
+            
+            // Mostrar URL en debug
+            console.log('Script URL:', CONFIG.SCRIPT_URL);
         });
 
         function initClock() {
@@ -1241,13 +1262,17 @@
             btn.classList.add('loading');
             btn.disabled = true;
 
+            // Debug info
+            const debugEl = document.getElementById('debugInfo');
+            debugEl.classList.add('active');
+
             try {
                 const systemTimestamp = new Date().toISOString();
 
                 // Datos según columnas de Sheets:
-                // A=usuario, B=fecha_visita, C=hora_visita, D=responsable, 
-                // E=negocio, F=direccion, G=telefono, H=observaciones,
-                // I=visit_id, J=imagen_url, K=latitud, L=longitud, M=tiempo_respuesta
+                // A=timestamp_sistema, B=usuario, C=fecha_visita, D=hora_visita, E=responsable, 
+                // F=negocio, G=direccion, H=telefono, I=observaciones, J=visit_id, K=imagen_url, 
+                // L=latitud, M=longitud, N=tiempo_respuesta
                 
                 const formData = {
                     timestamp_sistema: systemTimestamp,
@@ -1267,9 +1292,11 @@
                 updatePreview(formData);
 
                 showStatus('📸 Generando evidencia visual...', 'success');
+                debugEl.textContent = 'Generando imagen...';
                 
                 // Generar imagen
                 const imageBase64 = await generateImage();
+                debugEl.textContent = 'Imagen generada, preparando envío...';
                 
                 const visitId = generateVisitId();
                 const payload = {
@@ -1281,12 +1308,15 @@
                 };
 
                 showStatus('☁️ Subiendo a Google Sheets y Drive...', 'success');
+                debugEl.textContent = `Enviando a: ${CONFIG.SCRIPT_URL.substring(0, 50)}...`;
                 
                 // Enviar a Google Script
+                console.log('Enviando payload:', payload);
                 const response = await sendToGoogleScript(payload);
+                console.log('Respuesta:', response);
                 
                 // Mostrar imagen generada si hay URL
-                if (response.image_url && response.image_url.includes('http')) {
+                if (response && response.image_url && response.image_url.includes('http')) {
                     document.getElementById('generatedImagePreview').src = response.image_url;
                     document.getElementById('imageLink').innerHTML = `<a href="${response.image_url}" target="_blank">Ver imagen en Drive</a>`;
                     document.getElementById('imagePreviewSection').classList.add('active');
@@ -1299,12 +1329,17 @@
                 
                 showStatus(`✅ Visita registrada. ID: ${visitId}`, 'success');
                 document.getElementById('previewSection').classList.add('active');
+                debugEl.textContent = `Éxito: ${JSON.stringify(response)}`;
                 
-                setTimeout(() => resetForm(), 5000);
+                setTimeout(() => {
+                    resetForm();
+                    debugEl.classList.remove('active');
+                }, 5000);
 
             } catch (error) {
                 console.error('Error:', error);
                 showStatus(`❌ Error: ${error.message}`, 'error');
+                debugEl.textContent = `Error: ${error.message}\n${error.stack}`;
             } finally {
                 isSubmitting = false;
                 btn.classList.remove('loading');
@@ -1385,35 +1420,46 @@
 
         async function sendToGoogleScript(payload) {
             return new Promise((resolve, reject) => {
-                // Usar JSONP-like approach para evitar CORS issues con no-cors mode
                 const xhr = new XMLHttpRequest();
                 xhr.open('POST', CONFIG.SCRIPT_URL, true);
                 xhr.setRequestHeader('Content-Type', 'application/json');
                 
                 xhr.onload = function() {
-                    try {
-                        const response = JSON.parse(xhr.responseText);
-                        resolve(response);
-                    } catch (e) {
-                        // Si no puede parsear, asumir éxito (no-cors mode)
-                        resolve({ success: true });
+                    console.log('XHR Status:', xhr.status);
+                    console.log('XHR Response:', xhr.responseText);
+                    
+                    if (xhr.status === 200) {
+                        try {
+                            const response = JSON.parse(xhr.responseText);
+                            resolve(response);
+                        } catch (e) {
+                            resolve({ success: true, raw: xhr.responseText });
+                        }
+                    } else {
+                        // Para no-cors, a veces status es 0 pero funciona
+                        try {
+                            const response = JSON.parse(xhr.responseText);
+                            resolve(response);
+                        } catch (e) {
+                            resolve({ success: true, status: xhr.status });
+                        }
                     }
                 };
                 
                 xhr.onerror = function() {
-                    // En no-cors mode, el error es normal pero la petición se envía
-                    // Esperamos un poco y asumimos éxito
+                    console.log('XHR Error, pero puede haber funcionado igual');
+                    // En no-cors mode, el error es normal
                     setTimeout(() => {
-                        resolve({ success: true });
-                    }, 2000);
+                        resolve({ success: true, note: 'CORS mode' });
+                    }, 1000);
                 };
                 
                 xhr.send(JSON.stringify(payload));
                 
                 // Timeout de seguridad
                 setTimeout(() => {
-                    resolve({ success: true });
-                }, 5000);
+                    resolve({ success: true, note: 'timeout' });
+                }, 8000);
             });
         }
 
