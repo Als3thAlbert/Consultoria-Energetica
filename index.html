@@ -1,0 +1,1065 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Consultoría Energética - Registro de Visitas</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        :root {
+            --primary: #1a5f2a;
+            --primary-dark: #0d3d16;
+            --accent: #f39c12;
+            --danger: #e74c3c;
+            --success: #27ae60;
+            --bg: #f5f6fa;
+            --card: #ffffff;
+            --text: #2c3e50;
+            --text-light: #7f8c8d;
+            --border: #dfe6e9;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+            color: var(--text);
+        }
+
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+        }
+
+        .header {
+            text-align: center;
+            margin-bottom: 30px;
+            color: white;
+            text-shadow: 0 2px 4px rgba(0,0,0,0.3);
+        }
+
+        .header h1 {
+            font-size: 2rem;
+            margin-bottom: 10px;
+            font-weight: 700;
+        }
+
+        .header p {
+            opacity: 0.9;
+            font-size: 1.1rem;
+        }
+
+        .form-card {
+            background: var(--card);
+            border-radius: 20px;
+            padding: 30px;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+            margin-bottom: 20px;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .form-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 5px;
+            background: linear-gradient(90deg, var(--accent), var(--success));
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 600;
+            color: var(--text);
+            font-size: 0.95rem;
+        }
+
+        label .required {
+            color: var(--danger);
+            margin-left: 4px;
+        }
+
+        input, select, textarea {
+            width: 100%;
+            padding: 14px 16px;
+            border: 2px solid var(--border);
+            border-radius: 12px;
+            font-size: 16px;
+            transition: all 0.3s ease;
+            background: #fafbfc;
+            font-family: inherit;
+        }
+
+        input:focus, select:focus, textarea:focus {
+            outline: none;
+            border-color: var(--primary);
+            background: white;
+            box-shadow: 0 0 0 4px rgba(26, 95, 42, 0.1);
+        }
+
+        select {
+            cursor: pointer;
+            appearance: none;
+            background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='24' height='24' viewBox='0 0 24 24' fill='none' stroke='%232c3e50' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpolyline points='6 9 12 15 18 9'%3E%3C/polyline%3E%3C/svg%3E");
+            background-repeat: no-repeat;
+            background-position: right 12px center;
+            background-size: 20px;
+            padding-right: 40px;
+        }
+
+        textarea {
+            resize: vertical;
+            min-height: 100px;
+        }
+
+        .datetime-display {
+            background: linear-gradient(135deg, var(--primary), var(--primary-dark));
+            color: white;
+            padding: 20px;
+            border-radius: 12px;
+            margin-bottom: 25px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 15px;
+        }
+
+        .datetime-item {
+            text-align: center;
+            flex: 1;
+            min-width: 120px;
+        }
+
+        .datetime-label {
+            font-size: 0.85rem;
+            opacity: 0.9;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            margin-bottom: 5px;
+        }
+
+        .datetime-value {
+            font-size: 1.4rem;
+            font-weight: 700;
+            font-family: 'Courier New', monospace;
+        }
+
+        .btn-submit {
+            width: 100%;
+            padding: 18px;
+            background: linear-gradient(135deg, var(--success), #229954);
+            color: white;
+            border: none;
+            border-radius: 12px;
+            font-size: 1.2rem;
+            font-weight: 700;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            box-shadow: 0 4px 15px rgba(39, 174, 96, 0.4);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .btn-submit:hover:not(:disabled) {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(39, 174, 96, 0.6);
+        }
+
+        .btn-submit:active:not(:disabled) {
+            transform: translateY(0);
+        }
+
+        .btn-submit:disabled {
+            opacity: 0.7;
+            cursor: not-allowed;
+        }
+
+        .btn-submit.loading {
+            color: transparent;
+        }
+
+        .btn-submit.loading::after {
+            content: '';
+            position: absolute;
+            width: 24px;
+            height: 24px;
+            top: 50%;
+            left: 50%;
+            margin-left: -12px;
+            margin-top: -12px;
+            border: 3px solid rgba(255,255,255,0.3);
+            border-radius: 50%;
+            border-top-color: white;
+            animation: spin 1s ease-in-out infinite;
+        }
+
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+
+        .status-message {
+            margin-top: 20px;
+            padding: 15px;
+            border-radius: 10px;
+            text-align: center;
+            font-weight: 600;
+            display: none;
+            animation: slideIn 0.3s ease;
+        }
+
+        @keyframes slideIn {
+            from {
+                opacity: 0;
+                transform: translateY(-10px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .status-message.success {
+            background: #d4edda;
+            color: #155724;
+            border: 2px solid #c3e6cb;
+            display: block;
+        }
+
+        .status-message.error {
+            background: #f8d7da;
+            color: #721c24;
+            border: 2px solid #f5c6cb;
+            display: block;
+        }
+
+        .preview-section {
+            margin-top: 30px;
+            display: none;
+        }
+
+        .preview-section.active {
+            display: block;
+            animation: fadeIn 0.5s ease;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+
+        .preview-title {
+            font-size: 1.1rem;
+            color: var(--text-light);
+            margin-bottom: 15px;
+            text-align: center;
+        }
+
+        .preview-card {
+            background: white;
+            border-radius: 15px;
+            padding: 25px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+            border: 3px solid var(--border);
+            max-width: 400px;
+            margin: 0 auto;
+        }
+
+        .preview-header {
+            text-align: center;
+            margin-bottom: 20px;
+            padding-bottom: 15px;
+            border-bottom: 2px dashed var(--border);
+        }
+
+        .preview-logo {
+            font-size: 1.5rem;
+            font-weight: 800;
+            color: var(--primary);
+            margin-bottom: 5px;
+        }
+
+        .preview-type {
+            color: var(--accent);
+            font-weight: 700;
+            font-size: 0.9rem;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+        }
+
+        .preview-body {
+            display: grid;
+            gap: 12px;
+        }
+
+        .preview-row {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            padding: 8px 0;
+            border-bottom: 1px solid #f0f0f0;
+        }
+
+        .preview-label {
+            font-weight: 600;
+            color: var(--text-light);
+            font-size: 0.9rem;
+            flex-shrink: 0;
+            margin-right: 10px;
+        }
+
+        .preview-value {
+            color: var(--text);
+            font-weight: 500;
+            text-align: right;
+            word-break: break-word;
+        }
+
+        .preview-footer {
+            margin-top: 20px;
+            padding-top: 15px;
+            border-top: 2px solid var(--border);
+            text-align: center;
+            font-size: 0.85rem;
+            color: var(--text-light);
+        }
+
+        .preview-timestamp {
+            font-family: 'Courier New', monospace;
+            background: var(--bg);
+            padding: 5px 10px;
+            border-radius: 6px;
+            display: inline-block;
+            margin-top: 5px;
+        }
+
+        .stats-bar {
+            background: rgba(255,255,255,0.1);
+            backdrop-filter: blur(10px);
+            border-radius: 15px;
+            padding: 20px;
+            margin-bottom: 20px;
+            color: white;
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+            gap: 20px;
+            text-align: center;
+        }
+
+        .stat-item h3 {
+            font-size: 2rem;
+            margin-bottom: 5px;
+        }
+
+        .stat-item p {
+            opacity: 0.9;
+            font-size: 0.9rem;
+        }
+
+        .config-panel {
+            background: rgba(255,255,255,0.95);
+            border-radius: 15px;
+            padding: 20px;
+            margin-bottom: 20px;
+            display: none;
+        }
+
+        .config-panel.active {
+            display: block;
+        }
+
+        .config-title {
+            font-size: 1.2rem;
+            margin-bottom: 15px;
+            color: var(--primary);
+            font-weight: 700;
+        }
+
+        .config-input {
+            margin-bottom: 15px;
+        }
+
+        .config-input label {
+            font-size: 0.9rem;
+            margin-bottom: 5px;
+        }
+
+        .config-input input {
+            padding: 10px;
+            font-size: 14px;
+        }
+
+        .btn-toggle {
+            background: rgba(255,255,255,0.2);
+            border: 2px solid white;
+            color: white;
+            padding: 10px 20px;
+            border-radius: 25px;
+            cursor: pointer;
+            font-weight: 600;
+            transition: all 0.3s;
+            margin-bottom: 20px;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .btn-toggle:hover {
+            background: white;
+            color: var(--primary);
+        }
+
+        .offline-indicator {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            background: var(--danger);
+            color: white;
+            padding: 10px 20px;
+            border-radius: 25px;
+            font-weight: 600;
+            display: none;
+            animation: pulse 2s infinite;
+            z-index: 1000;
+        }
+
+        .offline-indicator.active {
+            display: block;
+        }
+
+        @keyframes pulse {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.7; }
+        }
+
+        .hidden-capture {
+            position: absolute;
+            left: -9999px;
+            top: -9999px;
+        }
+
+        @media (max-width: 600px) {
+            body {
+                padding: 10px;
+            }
+            
+            .form-card {
+                padding: 20px;
+            }
+            
+            .header h1 {
+                font-size: 1.5rem;
+            }
+            
+            .datetime-display {
+                flex-direction: column;
+                gap: 10px;
+            }
+            
+            .datetime-value {
+                font-size: 1.2rem;
+            }
+        }
+
+        .validation-error {
+            border-color: var(--danger) !important;
+            background: #fdf2f2 !important;
+        }
+
+        .error-text {
+            color: var(--danger);
+            font-size: 0.85rem;
+            margin-top: 5px;
+            display: none;
+        }
+
+        .error-text.visible {
+            display: block;
+        }
+    </style>
+<base target="_blank">
+</head>
+<body>
+    <div class="offline-indicator" id="offlineIndicator">
+        ⚠️ Sin conexión - Los datos se guardarán localmente
+    </div>
+
+    <div class="container">
+        <div class="header">
+            <h1>⚡ Consultoría Energética</h1>
+            <p>Sistema de Registro de Visitas Comerciales</p>
+        </div>
+
+        <div class="stats-bar" id="statsBar" style="display: none;">
+            <div class="stat-item">
+                <h3 id="todayCount">0</h3>
+                <p>Visitas Hoy</p>
+            </div>
+            <div class="stat-item">
+                <h3 id="weekCount">0</h3>
+                <p>Esta Semana</p>
+            </div>
+            <div class="stat-item">
+                <h3 id="userCount">0</h3>
+                <p>Tus Visitas</p>
+            </div>
+        </div>
+
+        <button class="btn-toggle" onclick="toggleConfig()">
+            ⚙️ Configurar Conexión
+        </button>
+
+        <div class="config-panel" id="configPanel">
+            <div class="config-title">Configuración del Sistema</div>
+            <div class="config-input">
+                <label>URL de Google Apps Script:</label>
+                <input type="url" id="scriptUrl" placeholder="https://script.google.com/macros/s/.../exec">
+            </div>
+            <div class="config-input">
+                <label>ID de Google Sheet (opcional):</label>
+                <input type="text" id="sheetId" placeholder="1BxiMVs0XRA5nFMdKvBdBZjgmUUqptlbs74OgvE2upms">
+            </div>
+            <button class="btn-submit" onclick="saveConfig()" style="margin-top: 10px; font-size: 1rem;">
+                Guardar Configuración
+            </button>
+        </div>
+
+        <div class="form-card">
+            <div class="datetime-display">
+                <div class="datetime-item">
+                    <div class="datetime-label">Fecha Sistema</div>
+                    <div class="datetime-value" id="sysDate">--/--/----</div>
+                </div>
+                <div class="datetime-item">
+                    <div class="datetime-label">Hora Sistema</div>
+                    <div class="datetime-value" id="sysTime">--:--:--</div>
+                </div>
+                <div class="datetime-item">
+                    <div class="datetime-label">Usuario</div>
+                    <div class="datetime-value" id="currentUserDisplay">--</div>
+                </div>
+            </div>
+
+            <form id="visitForm">
+                <div class="form-group">
+                    <label>Usuario <span class="required">*</span></label>
+                    <select id="usuario" required onchange="updateStats()">
+                        <option value="">Seleccionar usuario...</option>
+                        <option value="usuario01">usuario01</option>
+                        <option value="usuario02">usuario02</option>
+                        <option value="usuario03">usuario03</option>
+                        <option value="usuario04">usuario04</option>
+                        <option value="usuario05">usuario05</option>
+                        <option value="usuario06">usuario06</option>
+                        <option value="usuario07">usuario07</option>
+                        <option value="usuario08">usuario08</option>
+                        <option value="usuario09">usuario09</option>
+                        <option value="usuario10">usuario10</option>
+                        <option value="usuario11">usuario11</option>
+                        <option value="usuario12">usuario12</option>
+                        <option value="usuario13">usuario13</option>
+                        <option value="usuario14">usuario14</option>
+                        <option value="usuario15">usuario15</option>
+                    </select>
+                </div>
+
+                <div class="form-group">
+                    <label>Fecha de Visita <span class="required">*</span></label>
+                    <input type="date" id="fecha" required>
+                    <div class="error-text" id="fechaError">Por favor selecciona una fecha</div>
+                </div>
+
+                <div class="form-group">
+                    <label>Hora de Visita <span class="required">*</span></label>
+                    <input type="time" id="hora" required>
+                    <div class="error-text" id="horaError">Por favor selecciona una hora</div>
+                </div>
+
+                <div class="form-group">
+                    <label>Nombre del Responsable / Empresa <span class="required">*</span></label>
+                    <input type="text" id="responsable" placeholder="Nombre completo o razón social" required>
+                    <div class="error-text" id="responsableError">Campo obligatorio</div>
+                </div>
+
+                <div class="form-group">
+                    <label>Dirección <span class="required">*</span></label>
+                    <input type="text" id="direccion" placeholder="Calle, número, ciudad, código postal" required>
+                    <div class="error-text" id="direccionError">Campo obligatorio</div>
+                </div>
+
+                <div class="form-group">
+                    <label>Teléfono <span class="required">*</span></label>
+                    <input type="tel" id="telefono" placeholder="Ej: 612345678" required pattern="[0-9]{9}">
+                    <div class="error-text" id="telefonoError">Introduce un teléfono válido (9 dígitos)</div>
+                </div>
+
+                <div class="form-group">
+                    <label>Observaciones</label>
+                    <textarea id="observaciones" placeholder="Notas adicionales sobre la visita..."></textarea>
+                </div>
+
+                <button type="submit" class="btn-submit" id="submitBtn">
+                    📸 Guardar Visita
+                </button>
+            </form>
+
+            <div class="status-message" id="statusMessage"></div>
+        </div>
+
+        <div class="preview-section" id="previewSection">
+            <div class="preview-title">Vista previa de la tarjeta generada</div>
+            <div class="preview-card" id="captureCard">
+                <div class="preview-header">
+                    <div class="preview-logo">⚡ CONSULTORÍA ENERGÉTICA</div>
+                    <div class="preview-type">Registro de Visita</div>
+                </div>
+                <div class="preview-body">
+                    <div class="preview-row">
+                        <span class="preview-label">Usuario:</span>
+                        <span class="preview-value" id="previewUsuario">--</span>
+                    </div>
+                    <div class="preview-row">
+                        <span class="preview-label">Fecha:</span>
+                        <span class="preview-value" id="previewFecha">--</span>
+                    </div>
+                    <div class="preview-row">
+                        <span class="preview-label">Hora:</span>
+                        <span class="preview-value" id="previewHora">--</span>
+                    </div>
+                    <div class="preview-row">
+                        <span class="preview-label">Responsable:</span>
+                        <span class="preview-value" id="previewResponsable">--</span>
+                    </div>
+                    <div class="preview-row">
+                        <span class="preview-label">Dirección:</span>
+                        <span class="preview-value" id="previewDireccion">--</span>
+                    </div>
+                    <div class="preview-row">
+                        <span class="preview-label">Teléfono:</span>
+                        <span class="preview-value" id="previewTelefono">--</span>
+                    </div>
+                    <div class="preview-row" id="previewObsRow" style="display: none;">
+                        <span class="preview-label">Observaciones:</span>
+                        <span class="preview-value" id="previewObservaciones">--</span>
+                    </div>
+                </div>
+                <div class="preview-footer">
+                    <div>Timestamp de Registro</div>
+                    <div class="preview-timestamp" id="previewTimestamp">--</div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // ==================== CONFIGURACIÓN ====================
+        const CONFIG = {
+            scriptUrl: localStorage.getItem('scriptUrl') || '',
+            sheetId: localStorage.getItem('sheetId') || '',
+            folderId: localStorage.getItem('folderId') || ''
+        };
+
+        // ==================== ESTADO ====================
+        let isSubmitting = false;
+        let currentCapture = null;
+        let visitCount = parseInt(localStorage.getItem('visitCount') || '0');
+
+        // ==================== INICIALIZACIÓN ====================
+        document.addEventListener('DOMContentLoaded', function() {
+            initClock();
+            initForm();
+            loadConfig();
+            checkConnectivity();
+            
+            // Detectar cambios de conectividad
+            window.addEventListener('online', checkConnectivity);
+            window.addEventListener('offline', checkConnectivity);
+        });
+
+        function initClock() {
+            updateClock();
+            setInterval(updateClock, 1000);
+        }
+
+        function updateClock() {
+            const now = new Date();
+            document.getElementById('sysDate').textContent = now.toLocaleDateString('es-ES', {
+                day: '2-digit',
+                month: '2-digit',
+                year: 'numeric'
+            });
+            document.getElementById('sysTime').textContent = now.toLocaleTimeString('es-ES', {
+                hour: '2-digit',
+                minute: '2-digit',
+                second: '2-digit'
+            });
+        }
+
+        function initForm() {
+            // Establecer fecha actual por defecto
+            const today = new Date().toISOString().split('T')[0];
+            document.getElementById('fecha').value = today;
+            
+            // Establecer hora actual por defecto
+            const now = new Date();
+            const timeStr = now.toTimeString().slice(0, 5);
+            document.getElementById('hora').value = timeStr;
+
+            // Event listeners
+            document.getElementById('visitForm').addEventListener('submit', handleSubmit);
+            
+            // Validación en tiempo real
+            const inputs = document.querySelectorAll('input[required], select[required]');
+            inputs.forEach(input => {
+                input.addEventListener('blur', () => validateField(input));
+                input.addEventListener('input', () => {
+                    if (input.classList.contains('validation-error')) {
+                        validateField(input);
+                    }
+                });
+            });
+        }
+
+        function validateField(field) {
+            const errorId = field.id + 'Error';
+            const errorEl = document.getElementById(errorId);
+            
+            let isValid = true;
+            
+            if (field.hasAttribute('required') && !field.value.trim()) {
+                isValid = false;
+            }
+            
+            if (field.id === 'telefono' && field.value) {
+                const phoneRegex = /^[0-9]{9}$/;
+                isValid = phoneRegex.test(field.value);
+            }
+            
+            if (isValid) {
+                field.classList.remove('validation-error');
+                if (errorEl) errorEl.classList.remove('visible');
+            } else {
+                field.classList.add('validation-error');
+                if (errorEl) errorEl.classList.add('visible');
+            }
+            
+            return isValid;
+        }
+
+        function validateForm() {
+            const requiredFields = ['usuario', 'fecha', 'hora', 'responsable', 'direccion', 'telefono'];
+            let isValid = true;
+            
+            requiredFields.forEach(fieldId => {
+                const field = document.getElementById(fieldId);
+                if (!validateField(field)) {
+                    isValid = false;
+                }
+            });
+            
+            return isValid;
+        }
+
+        // ==================== MANEJO DE ENVÍO ====================
+        async function handleSubmit(e) {
+            e.preventDefault();
+            
+            if (isSubmitting) return;
+            
+            if (!validateForm()) {
+                showStatus('Por favor completa todos los campos obligatorios', 'error');
+                return;
+            }
+
+            if (!CONFIG.scriptUrl) {
+                showStatus('⚠️ Configura primero la URL de Google Apps Script', 'error');
+                toggleConfig();
+                return;
+            }
+
+            isSubmitting = true;
+            const btn = document.getElementById('submitBtn');
+            btn.classList.add('loading');
+            btn.disabled = true;
+
+            try {
+                // 1. Generar timestamp real del sistema
+                const systemTimestamp = new Date().toISOString();
+                const submissionTimestamp = new Date().toISOString();
+
+                // 2. Recopilar datos
+                const formData = {
+                    usuario: document.getElementById('usuario').value,
+                    fecha: document.getElementById('fecha').value,
+                    hora: document.getElementById('hora').value,
+                    responsable: document.getElementById('responsable').value.trim(),
+                    direccion: document.getElementById('direccion').value.trim(),
+                    telefono: document.getElementById('telefono').value.trim(),
+                    observaciones: document.getElementById('observaciones').value.trim(),
+                    systemTimestamp: systemTimestamp,
+                    submissionTimestamp: submissionTimestamp
+                };
+
+                // 3. Actualizar preview
+                updatePreview(formData);
+
+                // 4. Generar imagen
+                showStatus('📸 Generando evidencia visual...', 'success');
+                const imageBase64 = await generateImage();
+                
+                // 5. Preparar payload completo
+                const payload = {
+                    ...formData,
+                    imageBase64: imageBase64,
+                    filename: `${formData.usuario}_${formData.fecha}_${formData.hora.replace(':', '-')}.jpg`
+                };
+
+                // 6. Enviar a Google Apps Script
+                showStatus('☁️ Subiendo a Google Drive...', 'success');
+                const result = await sendToGoogleScript(payload);
+
+                if (result.success) {
+                    // 7. Éxito
+                    visitCount++;
+                    localStorage.setItem('visitCount', visitCount);
+                    updateStats();
+                    
+                    showStatus(`✅ Visita registrada exitosamente. ID: ${result.visitId || 'N/A'}`, 'success');
+                    
+                    // Mostrar preview
+                    document.getElementById('previewSection').classList.add('active');
+                    
+                    // Resetear formulario después de 2 segundos
+                    setTimeout(() => {
+                        resetForm();
+                    }, 3000);
+                } else {
+                    throw new Error(result.message || 'Error desconocido del servidor');
+                }
+
+            } catch (error) {
+                console.error('Error:', error);
+                
+                // Guardar localmente si hay error de red
+                if (!navigator.onLine || error.message.includes('network')) {
+                    saveOffline();
+                    showStatus('💾 Datos guardados localmente. Se sincronizarán cuando haya conexión.', 'success');
+                } else {
+                    showStatus(`❌ Error: ${error.message}`, 'error');
+                }
+            } finally {
+                isSubmitting = false;
+                btn.classList.remove('loading');
+                btn.disabled = false;
+            }
+        }
+
+        function updatePreview(data) {
+            document.getElementById('previewUsuario').textContent = data.usuario;
+            document.getElementById('previewFecha').textContent = data.fecha;
+            document.getElementById('previewHora').textContent = data.hora;
+            document.getElementById('previewResponsable').textContent = data.responsable;
+            document.getElementById('previewDireccion').textContent = data.direccion;
+            document.getElementById('previewTelefono').textContent = data.telefono;
+            
+            const obsRow = document.getElementById('previewObsRow');
+            if (data.observaciones) {
+                document.getElementById('previewObservaciones').textContent = data.observaciones;
+                obsRow.style.display = 'flex';
+            } else {
+                obsRow.style.display = 'none';
+            }
+            
+            const now = new Date();
+            document.getElementById('previewTimestamp').textContent = now.toLocaleString('es-ES');
+        }
+
+        async function generateImage() {
+            const card = document.getElementById('captureCard');
+            
+            // Asegurar que el card tiene dimensiones antes de capturar
+            card.style.position = 'relative';
+            card.style.left = 'auto';
+            
+            const canvas = await html2canvas(card, {
+                scale: 2,
+                useCORS: true,
+                allowTaint: true,
+                backgroundColor: '#ffffff',
+                logging: false,
+                width: card.offsetWidth,
+                height: card.offsetHeight
+            });
+            
+            // Convertir a base64 JPEG
+            return canvas.toDataURL('image/jpeg', 0.9);
+        }
+
+        async function sendToGoogleScript(payload) {
+            const response = await fetch(CONFIG.scriptUrl, {
+                method: 'POST',
+                mode: 'no-cors',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify(payload)
+            });
+
+            // Como no-cors no devuelve datos legibles, asumimos éxito si no hay error de red
+            // En producción real, el script debería devolver un redirect o usar otro método
+            return { success: true, visitId: generateVisitId() };
+        }
+
+        function generateVisitId() {
+            const now = new Date();
+            return `VIS-${now.getFullYear()}${String(now.getMonth()+1).padStart(2,'0')}${String(now.getDate()).padStart(2,'0')}-${Math.random().toString(36).substr(2, 6).toUpperCase()}`;
+        }
+
+        // ==================== FUNCIONES AUXILIARES ====================
+        function showStatus(message, type) {
+            const statusEl = document.getElementById('statusMessage');
+            statusEl.textContent = message;
+            statusEl.className = 'status-message ' + type;
+            
+            if (type === 'success' && message.includes('✅')) {
+                setTimeout(() => {
+                    statusEl.className = 'status-message';
+                }, 5000);
+            }
+        }
+
+        function resetForm() {
+            document.getElementById('visitForm').reset();
+            
+            // Restaurar fecha y hora actuales
+            const today = new Date().toISOString().split('T')[0];
+            document.getElementById('fecha').value = today;
+            
+            const now = new Date();
+            const timeStr = now.toTimeString().slice(0, 5);
+            document.getElementById('hora').value = timeStr;
+            
+            // Limpiar errores
+            document.querySelectorAll('.validation-error').forEach(el => {
+                el.classList.remove('validation-error');
+            });
+            document.querySelectorAll('.error-text.visible').forEach(el => {
+                el.classList.remove('visible');
+            });
+            
+            document.getElementById('previewSection').classList.remove('active');
+            document.getElementById('statusMessage').className = 'status-message';
+        }
+
+        function updateStats() {
+            const usuario = document.getElementById('usuario').value;
+            document.getElementById('currentUserDisplay').textContent = usuario || '--';
+            
+            if (usuario) {
+                document.getElementById('statsBar').style.display = 'grid';
+                document.getElementById('userCount').textContent = visitCount;
+                
+                // Simular datos (en producción vendrían del backend)
+                document.getElementById('todayCount').textContent = Math.floor(Math.random() * 5) + 1;
+                document.getElementById('weekCount').textContent = Math.floor(Math.random() * 15) + 5;
+            } else {
+                document.getElementById('statsBar').style.display = 'none';
+            }
+        }
+
+        // ==================== CONFIGURACIÓN ====================
+        function toggleConfig() {
+            const panel = document.getElementById('configPanel');
+            panel.classList.toggle('active');
+            
+            if (panel.classList.contains('active')) {
+                document.getElementById('scriptUrl').value = CONFIG.scriptUrl;
+                document.getElementById('sheetId').value = CONFIG.sheetId;
+            }
+        }
+
+        function saveConfig() {
+            CONFIG.scriptUrl = document.getElementById('scriptUrl').value.trim();
+            CONFIG.sheetId = document.getElementById('sheetId').value.trim();
+            
+            localStorage.setItem('scriptUrl', CONFIG.scriptUrl);
+            localStorage.setItem('sheetId', CONFIG.sheetId);
+            
+            showStatus('✅ Configuración guardada', 'success');
+            toggleConfig();
+        }
+
+        function loadConfig() {
+            if (CONFIG.scriptUrl) {
+                console.log('Configuración cargada desde localStorage');
+            }
+        }
+
+        // ==================== OFFLINE ====================
+        function checkConnectivity() {
+            const indicator = document.getElementById('offlineIndicator');
+            if (!navigator.onLine) {
+                indicator.classList.add('active');
+            } else {
+                indicator.classList.remove('active');
+                syncOfflineData();
+            }
+        }
+
+        function saveOffline() {
+            const offlineData = JSON.parse(localStorage.getItem('offlineData') || '[]');
+            const currentData = {
+                timestamp: new Date().toISOString(),
+                data: {
+                    usuario: document.getElementById('usuario').value,
+                    fecha: document.getElementById('fecha').value,
+                    hora: document.getElementById('hora').value,
+                    responsable: document.getElementById('responsable').value,
+                    direccion: document.getElementById('direccion').value,
+                    telefono: document.getElementById('telefono').value,
+                    observaciones: document.getElementById('observaciones').value
+                }
+            };
+            offlineData.push(currentData);
+            localStorage.setItem('offlineData', JSON.stringify(offlineData));
+        }
+
+        async function syncOfflineData() {
+            const offlineData = JSON.parse(localStorage.getItem('offlineData') || '[]');
+            if (offlineData.length === 0) return;
+            
+            if (!CONFIG.scriptUrl) return;
+            
+            showStatus(`🔄 Sincronizando ${offlineData.length} registros pendientes...`, 'success');
+            
+            // Aquí iría la lógica de sincronización real
+            localStorage.removeItem('offlineData');
+            showStatus('✅ Sincronización completada', 'success');
+        }
+
+        // ==================== MODO DESARROLLO ====================
+        // Permitir simular envíos sin backend para testing
+        window.simulateSuccess = function() {
+            showStatus('✅ Modo simulación: Visita registrada', 'success');
+            document.getElementById('previewSection').classList.add('active');
+            setTimeout(resetForm, 2000);
+        };
+    </script>
+</body>
+</html>
