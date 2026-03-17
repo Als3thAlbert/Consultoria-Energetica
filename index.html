@@ -703,8 +703,8 @@
                     <option value="">Seleccionar usuario...</option>
                     <option value="Jeny">Jeny</option>
                     <option value="Ariana">Ariana</option>
-                    <option value="Maria Carolina">Maria Carolina</option>
                     <option value="Luis">Luis</option>
+                    <option value="Maria Carolina">Maria Carolina</option>
                     <option value="usuario05">usuario05</option>
                     <option value="usuario06">usuario06</option>
                     <option value="usuario07">usuario07</option>
@@ -876,7 +876,7 @@
     <script>
         // ==================== CONFIGURACIÓN HARDCODEADA ====================
         const CONFIG = {
-            SCRIPT_URL: 'https://script.google.com/macros/s/AKfycbw54E1HBg9CxTIyZ9uE7HIbFYRQ7Bb7_D1EdErOwWK64H22nd2PjpJ_YqJV93-QCaAX5g/exec',
+            SCRIPT_URL: 'https://script.google.com/a/macros/artsgrafiques.org/s/AKfycbxvtSJZEA2KXyz8NcUNUiwO26KDD8b65BgsuN387VQ4JAze6tknps5Wy0SWqOGtEOxvbg/exec',
             DRIVE_FOLDER_ID: '1UFJsXMiaHfmcTjuM-xzA8ok4Exubd35q'
         };
 
@@ -1207,13 +1207,18 @@
                 updatePreview(formData);
 
                 showStatus('📸 Generando evidencia visual...', 'success');
+                
+                // Generar imagen y convertir a base64 puro (sin data:image/jpeg;base64,)
                 const imageBase64 = await generateImage();
+                
+                // Extraer solo la parte base64, quitar el prefijo
+                const base64Data = imageBase64.split(',')[1];
 
                 const visitId = generateVisitId();
                 const payload = {
                     ...formData,
                     visit_id: visitId,
-                    imageBase64: imageBase64,
+                    imageBase64: base64Data, // Solo el base64, sin prefijo
                     filename: `${formData.usuario}_${formData.fecha_visita}_${formData.hora_visita.replace(':', '-')}.jpg`,
                     folderId: CONFIG.DRIVE_FOLDER_ID
                 };
@@ -1313,6 +1318,7 @@
                 backgroundColor: '#ffffff',
                 logging: false
             });
+            // Devolver el base64 completo con prefijo
             return canvas.toDataURL('image/jpeg', 0.9);
         }
 
