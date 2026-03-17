@@ -87,7 +87,7 @@
             display: flex;
             align-items: center;
             justify-content: center;
-            font-size: 1.5rem;
+            font-size: 1.2rem;
             font-weight: bold;
             border: 3px solid white;
         }
@@ -876,7 +876,7 @@
     <script>
         // ==================== CONFIGURACIÓN HARDCODEADA ====================
         const CONFIG = {
-            SCRIPT_URL: 'https://script.google.com/macros/s/AKfycbxCXftcwJHLTvNDpjq0MBo15oThhnsFPLJs_JuxgDqRkrBxY5tZG2H1cCJo-eCg8t020w/exec',
+            SCRIPT_URL: 'https://script.google.com/macros/s/AKfycbxUif2j4g4h1UUfUUjmiSdmgNhMrt-8N5p8yKdgtzS-yTfz2Fz2Xap0bDxXyJHxUMfgsg/exec',
             DRIVE_FOLDER_ID: '1UFJsXMiaHfmcTjuM-xzA8ok4Exubd35q'
         };
 
@@ -960,7 +960,15 @@
             sessionState.user = user;
             document.getElementById('btnStart').disabled = false;
             document.getElementById('userIndicator').style.display = 'flex';
-            document.getElementById('userAvatar').textContent = user.slice(-2).toUpperCase();
+            
+            // Iniciales del nombre (primeras 2 letras o iniciales de nombre y apellido)
+            let iniciales = user.substring(0, 2).toUpperCase();
+            if (user.includes(' ')) {
+                const partes = user.split(' ');
+                iniciales = (partes[0][0] + partes[1][0]).toUpperCase();
+            }
+            document.getElementById('userAvatar').textContent = iniciales;
+            
             document.getElementById('displayUserName').textContent = user;
             document.getElementById('displayUserStatus').textContent = 'Listo para iniciar sesión';
             
@@ -1208,18 +1216,18 @@
 
                 showStatus('📸 Generando evidencia visual...', 'success');
                 
-                // Generar imagen y convertir a base64 puro (sin data:image/jpeg;base64,)
+                // Generar imagen
                 const imageBase64 = await generateImage();
                 
-                // Extraer solo la parte base64, quitar el prefijo
-                const base64Data = imageBase64.split(',')[1];
+                // CORREGIDO: Enviar el base64 completo con prefijo
+                // El Apps Script se encargará de extraerlo
 
                 const visitId = generateVisitId();
                 const payload = {
                     ...formData,
                     visit_id: visitId,
-                    imageBase64: base64Data, // Solo el base64, sin prefijo
-                    filename: `${formData.usuario}_${formData.fecha_visita}_${formData.hora_visita.replace(':', '-')}.jpg`,
+                    imageBase64: imageBase64, // Base64 completo con data:image/jpeg;base64,
+                    filename: `${sessionState.user}_${formData.fecha_visita}_${formData.hora_visita.replace(':', '-')}.jpg`,
                     folderId: CONFIG.DRIVE_FOLDER_ID
                 };
 
@@ -1238,11 +1246,7 @@
 
             } catch (error) {
                 console.error('Error:', error);
-                if (!navigator.onLine) {
-                    showStatus('💾 Guardado localmente', 'success');
-                } else {
-                    showStatus(`❌ Error: ${error.message}`, 'error');
-                }
+                showStatus(`❌ Error: ${error.message}`, 'error');
             } finally {
                 isSubmitting = false;
                 btn.classList.remove('loading');
@@ -1318,7 +1322,6 @@
                 backgroundColor: '#ffffff',
                 logging: false
             });
-            // Devolver el base64 completo con prefijo
             return canvas.toDataURL('image/jpeg', 0.9);
         }
 
