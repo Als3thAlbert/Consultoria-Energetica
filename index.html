@@ -582,121 +582,6 @@
             margin-top: 5px;
         }
 
-        .stats-bar {
-            background: rgba(255,255,255,0.1);
-            backdrop-filter: blur(10px);
-            border-radius: 15px;
-            padding: 20px;
-            margin-bottom: 20px;
-            color: white;
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
-            gap: 20px;
-            text-align: center;
-        }
-
-        .stat-item h3 {
-            font-size: 2rem;
-            margin-bottom: 5px;
-        }
-
-        .stat-item p {
-            opacity: 0.9;
-            font-size: 0.9rem;
-        }
-
-        .config-panel {
-            background: rgba(255,255,255,0.95);
-            border-radius: 15px;
-            padding: 20px;
-            margin-bottom: 20px;
-            display: none;
-        }
-
-        .config-panel.active {
-            display: block;
-        }
-
-        .config-title {
-            font-size: 1.2rem;
-            margin-bottom: 15px;
-            color: var(--primary);
-            font-weight: 700;
-        }
-
-        .config-input {
-            margin-bottom: 15px;
-        }
-
-        .config-input label {
-            font-size: 0.9rem;
-            margin-bottom: 5px;
-        }
-
-        .config-input input {
-            padding: 10px;
-            font-size: 14px;
-        }
-
-        .btn-toggle {
-            background: rgba(255,255,255,0.2);
-            border: 2px solid white;
-            color: white;
-            padding: 10px 20px;
-            border-radius: 25px;
-            cursor: pointer;
-            font-weight: 600;
-            transition: all 0.3s;
-            margin-bottom: 20px;
-            display: inline-flex;
-            align-items: center;
-            gap: 8px;
-        }
-
-        .btn-toggle:hover {
-            background: white;
-            color: var(--primary);
-        }
-
-        .offline-indicator {
-            position: fixed;
-            top: 20px;
-            right: 20px;
-            background: var(--danger);
-            color: white;
-            padding: 10px 20px;
-            border-radius: 25px;
-            font-weight: 600;
-            display: none;
-            animation: pulse 2s infinite;
-            z-index: 1000;
-        }
-
-        .offline-indicator.active {
-            display: block;
-        }
-
-        @keyframes pulse {
-            0%, 100% { opacity: 1; }
-            50% { opacity: 0.7; }
-        }
-
-        .validation-error {
-            border-color: var(--danger) !important;
-            background: #fdf2f2 !important;
-        }
-
-        .error-text {
-            color: var(--danger);
-            font-size: 0.85rem;
-            margin-top: 5px;
-            display: none;
-        }
-
-        .error-text.visible {
-            display: block;
-        }
-
         .activity-log {
             background: rgba(255,255,255,0.95);
             border-radius: 15px;
@@ -741,6 +626,45 @@
 
         .activity-icon {
             font-size: 1.2rem;
+        }
+
+        .offline-indicator {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            background: var(--danger);
+            color: white;
+            padding: 10px 20px;
+            border-radius: 25px;
+            font-weight: 600;
+            display: none;
+            animation: pulse 2s infinite;
+            z-index: 1000;
+        }
+
+        .offline-indicator.active {
+            display: block;
+        }
+
+        @keyframes pulse {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.7; }
+        }
+
+        .validation-error {
+            border-color: var(--danger) !important;
+            background: #fdf2f2 !important;
+        }
+
+        .error-text {
+            color: var(--danger);
+            font-size: 0.85rem;
+            margin-top: 5px;
+            display: none;
+        }
+
+        .error-text.visible {
+            display: block;
         }
     </style>
 </head>
@@ -829,25 +753,6 @@
         <div class="activity-log" id="activityLog">
             <div class="activity-title">📋 Registro de Actividad</div>
             <div id="activityList"></div>
-        </div>
-
-        <button class="btn-toggle" onclick="toggleConfig()">
-            ⚙️ Configurar Conexión
-        </button>
-
-        <div class="config-panel" id="configPanel">
-            <div class="config-title">Configuración del Sistema</div>
-            <div class="config-input">
-                <label>URL de Google Apps Script:</label>
-                <input type="url" id="scriptUrl" placeholder="https://script.google.com/macros/s/.../exec">
-            </div>
-            <div class="config-input">
-                <label>ID de Carpeta Google Drive:</label>
-                <input type="text" id="folderId" placeholder="1BxiMVs0XRA5nFMdKvBdBZjgmUUqptlbs">
-            </div>
-            <button class="btn-submit" onclick="saveConfig()" style="margin-top: 10px; font-size: 1rem;">
-                Guardar Configuración
-            </button>
         </div>
 
         <!-- FORMULARIO DE VISITAS (Aparece después de START) -->
@@ -969,10 +874,15 @@
     </div>
 
     <script>
-        // ==================== CONFIGURACIÓN ====================
+        // ==================== CONFIGURACIÓN HARDCODEADA ====================
+        // REEMPLAZA ESTOS VALORES CON TUS DATOS REALES ANTES DE DESPLEGAR
         const CONFIG = {
-            scriptUrl: localStorage.getItem('scriptUrl') || '',
-            folderId: localStorage.getItem('folderId') || ''
+            // URL del Web App de Google Apps Script (desplegado)
+            SCRIPT_URL: 'https://script.google.com/a/macros/artsgrafiques.org/s/AKfycbxvtSJZEA2KXyz8NcUNUiwO26KDD8b65BgsuN387VQ4JAze6tknps5Wy0SWqOGtEOxvbg/exec',
+            
+            // ID de la carpeta raíz en Google Drive donde se guardarán las imágenes
+            // Obtener de: https://drive.google.com/drive/folders/[ID_AQUI]
+            DRIVE_FOLDER_ID: '1UFJsXMiaHfmcTjuM-xzA8ok4Exubd35q'
         };
 
         // ==================== ESTADO DE SESIÓN ====================
@@ -995,7 +905,6 @@
         document.addEventListener('DOMContentLoaded', function() {
             initClock();
             initForm();
-            loadConfig();
             checkConnectivity();
             restoreSession();
             
@@ -1060,7 +969,6 @@
             document.getElementById('displayUserName').textContent = user;
             document.getElementById('displayUserStatus').textContent = 'Listo para iniciar sesión';
             
-            // Guardar selección
             localStorage.setItem('selectedUser', user);
         }
 
@@ -1077,14 +985,10 @@
             updateUIState();
             startTimer();
             
-            // Mostrar formulario
             document.getElementById('formCard').classList.add('active');
             document.getElementById('activityLog').classList.add('active');
             
-            // Guardar estado
             saveSessionState();
-            
-            // Enviar a Sheets
             sendActivityToSheets('START', 'Inicio de jornada');
         }
 
@@ -1095,14 +999,12 @@
             
             addActivity('STOP', 'Sesión finalizada');
             
-            // Enviar resumen
             sendActivityToSheets('STOP', 'Fin de jornada', {
                 duracionTotal: formatDuration(sessionDuration),
                 tiempoAfk: formatDuration(sessionState.totalAfkTime),
                 totalVisitas: sessionState.visitCount
             });
 
-            // Resetear estado
             clearInterval(timerInterval);
             clearInterval(afkInterval);
             
@@ -1119,7 +1021,6 @@
 
             updateUIState();
             
-            // Ocultar formulario
             document.getElementById('formCard').classList.remove('active');
             document.getElementById('activityLog').classList.remove('active');
             document.getElementById('sessionTimer').classList.remove('active');
@@ -1127,7 +1028,6 @@
             localStorage.removeItem('sessionState');
             localStorage.removeItem('selectedUser');
             
-            // Resetear formulario
             resetForm();
         }
 
@@ -1249,27 +1149,23 @@
             const statusBadge = document.getElementById('statusBadge');
             const statusText = document.getElementById('displayUserStatus');
 
-            // Reset todos
             btnStart.disabled = true;
             btnStop.disabled = true;
             btnAfk.disabled = true;
             btnBack.disabled = true;
 
             if (!sessionState.isActive) {
-                // Estado: Inactivo
                 btnStart.disabled = false;
                 statusBadge.className = 'status-badge inactive';
                 statusBadge.innerHTML = '● INACTIVO';
                 statusText.textContent = 'Listo para iniciar sesión';
             } else if (sessionState.isAfk) {
-                // Estado: AFK
                 btnStop.disabled = false;
                 btnBack.disabled = false;
                 statusBadge.className = 'status-badge afk';
                 statusBadge.innerHTML = '☕ AFK';
                 statusText.textContent = 'En pausa';
             } else {
-                // Estado: Activo
                 btnStop.disabled = false;
                 btnAfk.disabled = false;
                 statusBadge.className = 'status-badge active';
@@ -1289,12 +1185,6 @@
 
             if (!validateForm()) {
                 showStatus('Completa todos los campos obligatorios', 'error');
-                return;
-            }
-
-            if (!CONFIG.scriptUrl) {
-                showStatus('Configura la URL de Google Apps Script', 'error');
-                toggleConfig();
                 return;
             }
 
@@ -1332,13 +1222,12 @@
                     visit_id: visitId,
                     imageBase64: imageBase64,
                     filename: `${formData.usuario}_${formData.fecha_visita}_${formData.hora_visita.replace(':', '-')}.jpg`,
-                    folderId: CONFIG.folderId
+                    folderId: CONFIG.DRIVE_FOLDER_ID
                 };
 
                 showStatus('☁️ Subiendo...', 'success');
                 await sendToGoogleScript(payload);
 
-                // Éxito
                 sessionState.visitCount++;
                 document.getElementById('visitCountDisplay').textContent = sessionState.visitCount;
                 addActivity('VISIT', `Visita registrada: ${formData.nombre_negocio}`);
@@ -1436,7 +1325,7 @@
         }
 
         async function sendToGoogleScript(payload) {
-            await fetch(CONFIG.scriptUrl, {
+            const response = await fetch(CONFIG.SCRIPT_URL, {
                 method: 'POST',
                 mode: 'no-cors',
                 headers: { 'Content-Type': 'application/json' },
@@ -1446,8 +1335,6 @@
         }
 
         async function sendActivityToSheets(type, description, extraData = {}) {
-            if (!CONFIG.scriptUrl) return;
-            
             const payload = {
                 tipo_registro: 'ACTIVIDAD',
                 timestamp: new Date().toISOString(),
@@ -1458,7 +1345,7 @@
             };
             
             try {
-                await fetch(CONFIG.scriptUrl, {
+                await fetch(CONFIG.SCRIPT_URL, {
                     method: 'POST',
                     mode: 'no-cors',
                     headers: { 'Content-Type': 'application/json' },
@@ -1529,10 +1416,8 @@
             if (saved) {
                 const state = JSON.parse(saved);
                 if (state.isActive) {
-                    // Restaurar sesión
                     sessionState = { ...sessionState, ...state };
                     
-                    // Ajustar tiempos
                     if (sessionState.isAfk && sessionState.afkStartTime) {
                         startAfkTimer();
                     }
@@ -1551,31 +1436,7 @@
         function handleBeforeUnload(e) {
             if (sessionState.isActive) {
                 saveSessionState();
-                // No podemos enviar datos síncronamente, pero guardamos estado
             }
-        }
-
-        // ==================== CONFIGURACIÓN ====================
-        function toggleConfig() {
-            const panel = document.getElementById('configPanel');
-            panel.classList.toggle('active');
-            if (panel.classList.contains('active')) {
-                document.getElementById('scriptUrl').value = CONFIG.scriptUrl;
-                document.getElementById('folderId').value = CONFIG.folderId;
-            }
-        }
-
-        function saveConfig() {
-            CONFIG.scriptUrl = document.getElementById('scriptUrl').value.trim();
-            CONFIG.folderId = document.getElementById('folderId').value.trim();
-            localStorage.setItem('scriptUrl', CONFIG.scriptUrl);
-            localStorage.setItem('folderId', CONFIG.folderId);
-            showStatus('✅ Configuración guardada', 'success');
-            toggleConfig();
-        }
-
-        function loadConfig() {
-            // Ya cargado desde localStorage
         }
 
         // ==================== OFFLINE ====================
