@@ -93,9 +93,13 @@ async function guardar(){
 
   preview.innerHTML = `
     <h3>${data.nombre_negocio}</h3>
-    <p>${data.responsable}</p>
+   
+    <p>${data.fecha}</p>
+    <p>${data.hora}</p>
+    <h3>${data.responsable}</h3>
     <p>${data.direccion}</p>
     <p>${data.telefono}</p>
+     <h2>${data.usuario}</h2>
   `;
 
   const canvas = await html2canvas(preview);
