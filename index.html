@@ -81,7 +81,7 @@ button {
 
 <script>
 
-const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbyt539iCaTir4g2YXjzFE-U0nCsRNroMldzKf5gNx8cMES3EwZ6HDXZGMgtmpxMslpnyQ/exec";
+const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbz2bN54V6-g_8Cmw16NazdNIwhPIhEPmNYFX-3W3xrmQafCvIoZLETwWgstrzLwWBGeZA/exec";
 
 // usuarios
 for(let i=1;i<=15;i++){
@@ -91,40 +91,49 @@ for(let i=1;i<=15;i++){
   usuario.appendChild(o);
 }
 
-// guardar
 async function guardar(){
 
-  const data={
-    usuario:usuario.value,
-    fecha:fecha.value,
-    hora:hora.value,
-    negocio:negocio.value,
-    responsable:responsable.value,
-    direccion:direccion.value,
-    telefono:telefono.value,
-    observaciones:observaciones.value,
-    visit_id:Date.now()
+  const startTime = Date.now();
+
+  const data = {
+    usuario: usuario.value,
+    fecha_visita: fecha.value,
+    hora_visita: hora.value,
+    negocio: negocio.value,
+    responsable: responsable.value,
+    direccion: direccion.value,
+    telefono: telefono.value,
+    observaciones: observaciones.value,
+    visit_id: Date.now(),
+    latitud: "",
+    longitud: "",
+    tiempo_respuesta: 0
   };
 
-  preview.innerHTML=`
+  // preview
+  preview.innerHTML = `
     <h3>${data.negocio}</h3>
     <p>${data.responsable}</p>
     <p>${data.direccion}</p>
     <p>${data.telefono}</p>
   `;
 
+  // imagen
   const canvas = await html2canvas(preview);
   data.imageBase64 = canvas.toDataURL("image/jpeg");
-  data.filename = "visita_"+Date.now()+".jpg";
+  data.filename = "visita_" + Date.now() + ".jpg";
 
-  // 🔥 FETCH CORRECTO (SIN CORS PROBLEMAS)
+  // tiempo respuesta
+  data.tiempo_respuesta = Date.now() - startTime;
+
+  // envío (sin CORS)
   await fetch(SCRIPT_URL, {
     method: "POST",
     mode: "no-cors",
     body: JSON.stringify(data)
   });
 
-  alert("Visita enviada (verifica en Google Sheets)");
+  alert("✅ Visita enviada (revisa Google Sheets)");
 }
 
 </script>
