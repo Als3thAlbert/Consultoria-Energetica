@@ -15,7 +15,7 @@ body {
 }
 
 .container {
-  max-width: 500px;
+  max-width: 80%;
   margin: auto;
 }
 
@@ -92,13 +92,17 @@ async function guardar(){
   };
 
   preview.innerHTML = `
+    <h3>Nombre del Negocio:</h3></br>
     <h3>${data.nombre_negocio}</h3>
-   
+    <h3>Nombre del responsable:</h3></br>
+   <h3>${data.responsable}</h3>
+   <h3>Fecha y hora de la visita:</h3></br>
     <p>${data.fecha_visita}</p>
     <p>${data.hora_visita}</p>
-    <h3>${data.responsable}</h3>
+    <h3>Direccion:</h3></br>
     <p>${data.direccion}</p>
     <p>${data.telefono}</p>
+    <h3>Call Center:</h3></br>
      <h2>${data.usuario}</h2>
   `;
 
