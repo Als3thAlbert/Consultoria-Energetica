@@ -2,52 +2,45 @@
 <html lang="es">
 <head>
 <meta charset="UTF-8">
-<title>Consultoría Energética</title>
+<title>Registro Visitas</title>
 
 <script src="https://html2canvas.hertzen.com/dist/html2canvas.min.js"></script>
 
 <style>
 body {
-  font-family: 'Segoe UI', sans-serif;
-  background: linear-gradient(135deg,#967eea,#764ba2);
+  font-family: Arial;
+  background: #111;
   color: white;
   padding: 20px;
 }
 
 .container {
-  max-width: 800px;
+  max-width: 500px;
   margin: auto;
 }
 
-.card {
-  background: rgba(255,255,255,0.1);
-  padding: 20px;
-  border-radius: 15px;
-  margin-bottom: 20px;
-}
-
-input, select, textarea {
+input, textarea, select {
   width: 100%;
   padding: 10px;
-  margin: 6px 0;
-  border-radius: 8px;
+  margin: 5px 0;
+  border-radius: 5px;
   border: none;
 }
 
 button {
-  padding: 12px;
+  padding: 15px;
+  width: 100%;
+  background: green;
+  color: white;
   border: none;
-  border-radius: 10px;
-  font-weight: bold;
-  cursor: pointer;
-  background: #22c55e;
+  margin-top: 10px;
+  font-size: 16px;
 }
 
 .preview {
   background: white;
   color: black;
-  padding: 15px;
-  border-radius: 10px;
+  padding: 10px;
   margin-top: 20px;
 }
 </style>
@@ -57,11 +50,13 @@ button {
 
 <div class="container">
 
-<h2>⚡ Registro de Visita</h2>
+<h2>Registro de Visita</h2>
 
-<div class="card">
-
-<select id="usuario"></select>
+<select id="usuario">
+  <option value="Jeny">Jeny</option>
+  <option value="Ariana">Ariana</option>
+  <option value="Luis">Luis</option>
+</select>
 
 <input type="date" id="fecha">
 <input type="time" id="hora">
@@ -71,9 +66,7 @@ button {
 <input type="text" id="telefono" placeholder="Teléfono">
 <textarea id="observaciones" placeholder="Observaciones"></textarea>
 
-<button onclick="guardar()">Guardar Visita</button>
-
-</div>
+<button onclick="guardar()">Guardar</button>
 
 <div id="preview" class="preview"></div>
 
@@ -81,15 +74,7 @@ button {
 
 <script>
 
-const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbxQcA2zYWtS6c3LFHkPQsVtjBer1H9XA7b-AMj82qnsGBSP0nI4HIUH3lYV3KeYkwNKMw/exec";
-
-// usuarios
-for(let i=1;i<=15;i++){
-  let o=document.createElement("option");
-  o.value="usuario"+i;
-  o.text="usuario"+i;
-  usuario.appendChild(o);
-}
+const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbzbH1g3wZ6KmxmA1qTeyb7YX5xwrcxZpnhOaHj4WFXnz09XJQ0wiYHaB57P-lFFdjuSHg/exec";
 
 async function guardar(){
 
@@ -97,7 +82,7 @@ async function guardar(){
     usuario: usuario.value,
     fecha_visita: fecha.value,
     hora_visita: hora.value,
-    negocio: negocio.value,
+    nombre_negocio: negocio.value,
     responsable: responsable.value,
     direccion: direccion.value,
     telefono: telefono.value,
@@ -105,34 +90,31 @@ async function guardar(){
     visit_id: Date.now()
   };
 
-  // preview
   preview.innerHTML = `
-    <h3>${data.negocio}</h3>
+    <h3>${data.nombre_negocio}</h3>
     <p>${data.responsable}</p>
     <p>${data.direccion}</p>
     <p>${data.telefono}</p>
   `;
 
-  // imagen
   const canvas = await html2canvas(preview);
   data.imageBase64 = canvas.toDataURL("image/jpeg");
-  data.filename = "visita_" + Date.now() + ".jpg";
+  data.filename = "visita.jpg";
 
-  // 🔥 FORM DATA (CLAVE)
   const formData = new FormData();
 
   for (let key in data) {
     formData.append(key, data[key]);
   }
 
-  fetch(SCRIPT_URL, {
+  await fetch(SCRIPT_URL, {
     method: "POST",
     body: formData
   });
 
-  alert("✅ Visita enviada");
-}
+  alert("Guardado");
 
+}
 </script>
 
 </body>
