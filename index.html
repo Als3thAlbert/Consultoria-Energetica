@@ -1,8 +1,7 @@
 <!DOCTYPE html>
-<html lang="es">
+<html>
 <head>
 <meta charset="UTF-8">
-<title>Consultoría Energética</title>
 <script src="https://html2canvas.hertzen.com/dist/html2canvas.min.js"></script>
 
 <style>
@@ -47,12 +46,12 @@ button {
 
 <div class="container">
 
-<h2>Registro de Visita</h2>
+<h2>⚡ Consultoría Energética</h2>
 
 <select id="usuario"></select>
 <input type="date" id="fecha">
 <input type="time" id="hora">
-<input type="text" id="nombre_negocio" placeholder="Negocio">
+<input type="text" id="negocio" placeholder="Negocio">
 <input type="text" id="responsable" placeholder="Responsable">
 <input type="text" id="direccion" placeholder="Dirección">
 <input type="text" id="telefono" placeholder="Teléfono">
@@ -65,7 +64,6 @@ button {
 </div>
 
 <script>
-const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbwxxVjrmRGxaWY0_d98yZZREuy-EgaS7ruwBbEeLSb13kww_e_kcqW1jCH8HFG9r5Lv7g/exec";
 
 // usuarios
 for (let i = 1; i <= 15; i++) {
@@ -75,13 +73,14 @@ for (let i = 1; i <= 15; i++) {
   usuario.appendChild(opt);
 }
 
+// guardar visita
 async function guardar() {
 
   const data = {
     usuario: usuario.value,
-    fecha_visita: fecha.value,
-    hora_visita: hora.value,
-    nombre_negocio: nombre_negocio.value,
+    fecha: fecha.value,
+    hora: hora.value,
+    negocio: negocio.value,
     responsable: responsable.value,
     direccion: direccion.value,
     telefono: telefono.value,
@@ -89,36 +88,27 @@ async function guardar() {
     visit_id: Date.now()
   };
 
-  // preview
   preview.innerHTML = `
-    <h3>${data.nombre_negocio}</h3>
+    <h3>${data.negocio}</h3>
     <p>${data.responsable}</p>
     <p>${data.direccion}</p>
     <p>${data.telefono}</p>
   `;
 
-  // generar imagen
   const canvas = await html2canvas(preview);
   const imageBase64 = canvas.toDataURL("image/jpeg");
 
   data.imageBase64 = imageBase64;
   data.filename = "visita_" + Date.now() + ".jpg";
 
-  console.log("ENVIANDO:", data);
-
-  const res = await fetch(SCRIPT_URL, {
-    method: "POST",
-    headers: {
-      "Content-Type": "application/json"
-    },
-    body: JSON.stringify(data)
-  });
-
-  const text = await res.text();
-  console.log("RESPUESTA:", text);
-
-  alert("Visita guardada");
+  google.script.run
+    .withSuccessHandler(res => {
+      alert("Guardado OK");
+      console.log(res);
+    })
+    .guardarVisita(data);
 }
+
 </script>
 
 </body>
