@@ -1,42 +1,30 @@
 <!DOCTYPE html>
-<html>
+<html lang="es">
 <head>
 <meta charset="UTF-8">
+<title>Consultoría Energética</title>
+
 <script src="https://html2canvas.hertzen.com/dist/html2canvas.min.js"></script>
 
 <style>
 body {
-  font-family: Arial;
+  font-family: 'Segoe UI', sans-serif;
   background: linear-gradient(135deg,#667eea,#764ba2);
   color: white;
   padding: 20px;
 }
 
 .container {
-  max-width: 700px;
+  max-width: 800px;
   margin: auto;
 }
 
-.panel {
+.card {
   background: rgba(255,255,255,0.1);
   padding: 20px;
   border-radius: 15px;
   margin-bottom: 20px;
 }
-
-button {
-  padding: 15px;
-  border: none;
-  border-radius: 10px;
-  font-weight: bold;
-  cursor: pointer;
-  margin: 5px;
-}
-
-.start { background: #27ae60; }
-.stop { background: #e74c3c; }
-.afk { background: #f39c12; }
-.back { background: #3498db; }
 
 input, select, textarea {
   width: 100%;
@@ -46,10 +34,20 @@ input, select, textarea {
   border: none;
 }
 
-.card {
+button {
+  padding: 12px;
+  border: none;
+  border-radius: 10px;
+  font-weight: bold;
+  cursor: pointer;
+  background: #22c55e;
+}
+
+.preview {
   background: white;
   color: black;
   padding: 15px;
+  border-radius: 10px;
   margin-top: 20px;
 }
 </style>
@@ -59,73 +57,56 @@ input, select, textarea {
 
 <div class="container">
 
-<h2>⚡ Sistema Comercial</h2>
+<h2>⚡ Registro de Visita</h2>
 
-<div class="panel">
+<div class="card">
+
 <select id="usuario"></select>
 
-<button class="start" onclick="start()">START</button>
-<button class="stop" onclick="stop()">STOP</button>
-<button class="afk" onclick="afk()">AFK</button>
-<button class="back" onclick="back()">BACK</button>
-</div>
-
-<div class="panel">
 <input type="date" id="fecha">
 <input type="time" id="hora">
 <input type="text" id="negocio" placeholder="Negocio">
 <input type="text" id="responsable" placeholder="Responsable">
 <input type="text" id="direccion" placeholder="Dirección">
 <input type="text" id="telefono" placeholder="Teléfono">
-<textarea id="observaciones"></textarea>
+<textarea id="observaciones" placeholder="Observaciones"></textarea>
 
 <button onclick="guardar()">Guardar Visita</button>
+
 </div>
 
-<div id="preview" class="card"></div>
+<div id="preview" class="preview"></div>
 
 </div>
 
 <script>
 
+const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbyt539iCaTir4g2YXjzFE-U0nCsRNroMldzKf5gNx8cMES3EwZ6HDXZGMgtmpxMslpnyQ/exec";
+
 // usuarios
-for (let i = 1; i <= 15; i++) {
-  let opt = document.createElement("option");
-  opt.value = "usuario" + i;
-  opt.text = "usuario" + i;
-  usuario.appendChild(opt);
+for(let i=1;i<=15;i++){
+  let o=document.createElement("option");
+  o.value="usuario"+i;
+  o.text="usuario"+i;
+  usuario.appendChild(o);
 }
 
-// ===== ACTIVIDAD =====
-function enviarActividad(tipo, desc) {
-  google.script.run.guardarActividad({
-    usuario: usuario.value,
-    tipo: tipo,
-    descripcion: desc
-  });
-}
-
-function start(){ enviarActividad("START","Inicio jornada"); }
-function stop(){ enviarActividad("STOP","Fin jornada"); }
-function afk(){ enviarActividad("AFK","Pausa"); }
-function back(){ enviarActividad("BACK","Vuelve"); }
-
-// ===== VISITA =====
+// guardar
 async function guardar(){
 
-  const data = {
-    usuario: usuario.value,
-    fecha: fecha.value,
-    hora: hora.value,
-    negocio: negocio.value,
-    responsable: responsable.value,
-    direccion: direccion.value,
-    telefono: telefono.value,
-    observaciones: observaciones.value,
-    visit_id: Date.now()
+  const data={
+    usuario:usuario.value,
+    fecha:fecha.value,
+    hora:hora.value,
+    negocio:negocio.value,
+    responsable:responsable.value,
+    direccion:direccion.value,
+    telefono:telefono.value,
+    observaciones:observaciones.value,
+    visit_id:Date.now()
   };
 
-  preview.innerHTML = `
+  preview.innerHTML=`
     <h3>${data.negocio}</h3>
     <p>${data.responsable}</p>
     <p>${data.direccion}</p>
@@ -136,9 +117,14 @@ async function guardar(){
   data.imageBase64 = canvas.toDataURL("image/jpeg");
   data.filename = "visita_"+Date.now()+".jpg";
 
-  google.script.run
-    .withSuccessHandler(()=> alert("Guardado OK"))
-    .guardarVisita(data);
+  // 🔥 FETCH CORRECTO (SIN CORS PROBLEMAS)
+  await fetch(SCRIPT_URL, {
+    method: "POST",
+    mode: "no-cors",
+    body: JSON.stringify(data)
+  });
+
+  alert("Visita enviada (verifica en Google Sheets)");
 }
 
 </script>
