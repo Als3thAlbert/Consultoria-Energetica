@@ -81,7 +81,7 @@ button {
 
 <script>
 
-const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbx3hSIEFYBN4o-Q5ycrdoY0HOglpb9XzvqC4ksDYf0YydD1zycMb7sA42Sh5GeysT_95w/exec";
+const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbzcW4Ke3Xhb1ktPZQNLFp5PL9ckt1mEbZPcAOvfPe4hWft-rVDRwjtq_BDZHuCi8ujl3A/exec";
 
 // usuarios
 for(let i=1;i<=15;i++){
@@ -93,8 +93,6 @@ for(let i=1;i<=15;i++){
 
 async function guardar(){
 
-  const startTime = Date.now();
-
   const data = {
     usuario: usuario.value,
     fecha_visita: fecha.value,
@@ -104,10 +102,7 @@ async function guardar(){
     direccion: direccion.value,
     telefono: telefono.value,
     observaciones: observaciones.value,
-    visit_id: Date.now(),
-    latitud: "",
-    longitud: "",
-    tiempo_respuesta: 0
+    visit_id: Date.now()
   };
 
   // preview
@@ -123,42 +118,22 @@ async function guardar(){
   data.imageBase64 = canvas.toDataURL("image/jpeg");
   data.filename = "visita_" + Date.now() + ".jpg";
 
-  // tiempo respuesta
-  data.tiempo_respuesta = Date.now() - startTime;
+  // 🔥 FORM DATA (CLAVE)
+  const formData = new FormData();
 
-  // envío (sin CORS)
-  await fetch(SCRIPT_URL, {
+  for (let key in data) {
+    formData.append(key, data[key]);
+  }
+
+  fetch(SCRIPT_URL, {
     method: "POST",
-    mode: "no-cors",
-    body: JSON.stringify(data)
+    body: formData
   });
 
-  alert("✅ Visita enviada (revisa Google Sheets)");
+  alert("✅ Visita enviada");
 }
 
 </script>
-<button onclick="test()">TEST</button>
 
-<script>
-function test(){
-  fetch("https://script.google.com/macros/s/AKfycbx3hSIEFYBN4o-Q5ycrdoY0HOglpb9XzvqC4ksDYf0YydD1zycMb7sA42Sh5GeysT_95w/exec", {
-    method: "POST",
-    mode: "no-cors",
-    body: JSON.stringify({
-      usuario: "test",
-      fecha_visita: "2026-03-18",
-      hora_visita: "10:00",
-      responsable: "test",
-      negocio: "test",
-      direccion: "test",
-      telefono: "123",
-      observaciones: "test",
-      visit_id: Date.now()
-    })
-  });
-
-  alert("enviado");
-}
-</script>
 </body>
 </html>
