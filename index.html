@@ -7,37 +7,50 @@
 <style>
 body {
   font-family: Arial;
-  background: #0f172a;
+  background: linear-gradient(135deg,#667eea,#764ba2);
   color: white;
   padding: 20px;
 }
 
 .container {
-  max-width: 600px;
+  max-width: 700px;
   margin: auto;
 }
 
-input, select, textarea {
-  width: 100%;
-  padding: 10px;
-  margin: 8px 0;
-  border-radius: 8px;
-  border: none;
+.panel {
+  background: rgba(255,255,255,0.1);
+  padding: 20px;
+  border-radius: 15px;
+  margin-bottom: 20px;
 }
 
 button {
-  padding: 12px;
-  background: #22c55e;
+  padding: 15px;
   border: none;
   border-radius: 10px;
   font-weight: bold;
   cursor: pointer;
+  margin: 5px;
+}
+
+.start { background: #27ae60; }
+.stop { background: #e74c3c; }
+.afk { background: #f39c12; }
+.back { background: #3498db; }
+
+input, select, textarea {
+  width: 100%;
+  padding: 10px;
+  margin: 6px 0;
+  border-radius: 8px;
+  border: none;
 }
 
 .card {
-  margin-top: 20px;
+  background: white;
+  color: black;
   padding: 15px;
-  background: #1e293b;
+  margin-top: 20px;
 }
 </style>
 </head>
@@ -46,18 +59,28 @@ button {
 
 <div class="container">
 
-<h2>⚡ Consultoría Energética</h2>
+<h2>⚡ Sistema Comercial</h2>
 
+<div class="panel">
 <select id="usuario"></select>
+
+<button class="start" onclick="start()">START</button>
+<button class="stop" onclick="stop()">STOP</button>
+<button class="afk" onclick="afk()">AFK</button>
+<button class="back" onclick="back()">BACK</button>
+</div>
+
+<div class="panel">
 <input type="date" id="fecha">
 <input type="time" id="hora">
 <input type="text" id="negocio" placeholder="Negocio">
 <input type="text" id="responsable" placeholder="Responsable">
 <input type="text" id="direccion" placeholder="Dirección">
 <input type="text" id="telefono" placeholder="Teléfono">
-<textarea id="observaciones" placeholder="Observaciones"></textarea>
+<textarea id="observaciones"></textarea>
 
 <button onclick="guardar()">Guardar Visita</button>
+</div>
 
 <div id="preview" class="card"></div>
 
@@ -73,8 +96,22 @@ for (let i = 1; i <= 15; i++) {
   usuario.appendChild(opt);
 }
 
-// guardar visita
-async function guardar() {
+// ===== ACTIVIDAD =====
+function enviarActividad(tipo, desc) {
+  google.script.run.guardarActividad({
+    usuario: usuario.value,
+    tipo: tipo,
+    descripcion: desc
+  });
+}
+
+function start(){ enviarActividad("START","Inicio jornada"); }
+function stop(){ enviarActividad("STOP","Fin jornada"); }
+function afk(){ enviarActividad("AFK","Pausa"); }
+function back(){ enviarActividad("BACK","Vuelve"); }
+
+// ===== VISITA =====
+async function guardar(){
 
   const data = {
     usuario: usuario.value,
@@ -96,16 +133,11 @@ async function guardar() {
   `;
 
   const canvas = await html2canvas(preview);
-  const imageBase64 = canvas.toDataURL("image/jpeg");
-
-  data.imageBase64 = imageBase64;
-  data.filename = "visita_" + Date.now() + ".jpg";
+  data.imageBase64 = canvas.toDataURL("image/jpeg");
+  data.filename = "visita_"+Date.now()+".jpg";
 
   google.script.run
-    .withSuccessHandler(res => {
-      alert("Guardado OK");
-      console.log(res);
-    })
+    .withSuccessHandler(()=> alert("Guardado OK"))
     .guardarVisita(data);
 }
 
