@@ -59,12 +59,12 @@ button {
   <option value="Maria Carolina">Maria Carolina</option>
 </select>
 
-<input type="date" id="fecha">
-<input type="time" id="hora">
-<input type="text" id="negocio" placeholder="Negocio">
-<input type="text" id="responsable" placeholder="Responsable">
-<input type="text" id="direccion" placeholder="Dirección">
-<input type="text" id="telefono" placeholder="Teléfono">
+<input type="date" id="fecha"required>
+<input type="time" id="hora"required>
+<input type="text" id="negocio" placeholder="Negocio"required>
+<input type="text" id="responsable" placeholder="Responsable"required>
+<input type="text" id="direccion" placeholder="Dirección"required>
+<input type="text" id="telefono" placeholder="Teléfono"required>
 <textarea id="observaciones" placeholder="Observaciones"></textarea>
 
 <button onclick="guardar()">Guardar</button>
@@ -92,17 +92,17 @@ async function guardar(){
   };
 
   preview.innerHTML = `
-    <h3>Nombre del Negocio:</h3></br>
-    <h3>${data.nombre_negocio}</h3>
-    <h3>Nombre del responsable:</h3></br>
-   <h3>${data.responsable}</h3>
-   <h3>Fecha y hora de la visita:</h3></br>
+    <h3>Nombre del Negocio:</h3>
+    <p>${data.nombre_negocio}</p></br>
+    <h3>Nombre del responsable:</h3>
+   <p>${data.responsable}</p></br>
+   <h3>Fecha y hora de la visita:</h3>
     <p>${data.fecha_visita}</p>
-    <p>${data.hora_visita}</p>
-    <h3>Direccion:</h3></br>
+    <p>${data.hora_visita}</p></br>
+    <h3>Direccion:</h3>
     <p>${data.direccion}</p>
-    <p>${data.telefono}</p>
-    <h3>Call Center:</h3></br>
+    <p>${data.telefono}</p></br>
+    <h3>Call Center:</h3>
      <h2>${data.usuario}</h2>
   `;
 
