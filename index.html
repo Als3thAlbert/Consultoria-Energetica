@@ -2,78 +2,133 @@
 <html lang="es">
 <head>
 <meta charset="UTF-8">
-<title>Registro Visitas</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Registro de Visitas</title>
+
 <script src="https://html2canvas.hertzen.com/dist/html2canvas.min.js"></script>
+<script src="https://cdn.tailwindcss.com"></script>
+
 <style>
-body { font-family: Arial; padding:20px; background:#f2f2f2; }
-input, textarea, select { width:100%; padding:10px; margin:5px 0; }
-button { padding:15px; background:green; color:white; border:none; cursor:pointer; }
-#preview { background:white; padding:20px; margin-top:20px; }
+body { font-family: 'Inter', sans-serif; }
+.card-shadow { box-shadow: 0 20px 60px rgba(0,0,0,0.2); }
 </style>
 </head>
 
-<body>
+<body class="bg-gradient-to-br from-slate-900 to-slate-700 min-h-screen flex items-center justify-center p-6">
 
-<h2>Registro de Visita</h2>
+<div class="w-full max-w-xl">
 
-<select id="usuario">
-  <option value="Jeny">Jeny</option>
-  <option value="Ariana">Ariana</option>
-    <option value="Maria Carolina">Maria Carolina</option>
-  <option value="Luis">Luis</option>
-    <option value="Test">Test</option>
+<h1 class="text-white text-3xl font-bold mb-6 text-center">
+⚡ Registro de Visita
+</h1>
+
+<div class="bg-white rounded-2xl p-6 card-shadow">
+
+<!-- FORM -->
+<div class="space-y-4">
+
+<select id="usuario" class="w-full p-3 rounded-xl bg-slate-100">
+<option value="">Agente</option>
+<option>Jeny</option>
+<option>Ariana</option>
+<option>Luis</option>
+<option>Maria Carolina</option>
+<option>Test01</option>
+
 </select>
 
-<input type="date" id="fecha">
-<input type="time" id="hora">
-<input type="text" id="negocio" placeholder="Negocio">
-<input type="text" id="responsable" placeholder="Responsable">
-<input type="text" id="direccion" placeholder="Dirección">
-<input type="text" id="telefono" placeholder="Teléfono">
-<textarea id="observaciones" placeholder="Observaciones"></textarea>
+<div class="grid grid-cols-2 gap-3">
+<input type="date" id="fecha" class="p-3 rounded-xl bg-slate-100">
+<input type="time" id="hora" class="p-3 rounded-xl bg-slate-100">
+</div>
 
-<button onclick="guardar()">GUARDAR</button>
+<input id="negocio" placeholder="Negocio" class="w-full p-3 rounded-xl bg-slate-100">
+<input id="responsable" placeholder="Responsable" class="w-full p-3 rounded-xl bg-slate-100">
+<input id="direccion" placeholder="Dirección" class="w-full p-3 rounded-xl bg-slate-100">
+<input id="telefono" placeholder="Teléfono" class="w-full p-3 rounded-xl bg-slate-100">
 
-<div id="preview"></div>
+<textarea id="observaciones" placeholder="Observaciones (opcional)" class="w-full p-3 rounded-xl bg-slate-100"></textarea>
+
+<button onclick="guardar()" class="w-full bg-green-500 hover:bg-green-600 text-white p-4 rounded-xl font-bold">
+📸 Guardar Visita
+</button>
+
+</div>
+</div>
+
+<!-- PREVIEW -->
+<div id="previewContainer" class="mt-6 hidden">
+<div id="preview" class="bg-white rounded-2xl p-6 card-shadow"></div>
+</div>
+
+</div>
 
 <script>
 
 const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbz71BF4e1YdfZTYbzat20EnIpkznPWLWOaptmSVyQKKWipYzaD6_nQTqcRUxIAV3yObew/exec";
 
+document.addEventListener("DOMContentLoaded", () => {
+  const now = new Date();
+  document.getElementById("fecha").value = now.toISOString().split('T')[0];
+  document.getElementById("hora").value = now.toTimeString().slice(0,5);
+});
+
 async function guardar() {
 
   const data = {
-    usuario: document.getElementById('usuario').value,
-    fecha_visita: document.getElementById('fecha').value,
-    hora_visita: document.getElementById('hora').value,
-    nombre_negocio: document.getElementById('negocio').value,
-    responsable: document.getElementById('responsable').value,
-    direccion: document.getElementById('direccion').value,
-    telefono: document.getElementById('telefono').value,
-    observaciones: document.getElementById('observaciones').value,
+    usuario: val("usuario"),
+    fecha_visita: val("fecha"),
+    hora_visita: val("hora"),
+    nombre_negocio: val("negocio"),
+    responsable: val("responsable"),
+    direccion: val("direccion"),
+    telefono: val("telefono"),
+    observaciones: val("observaciones"),
     visit_id: Date.now()
   };
 
-  // ===== PREVIEW =====
-  const preview = document.getElementById("preview");
-  preview.innerHTML = `
-    <h3>${data.nombre_negocio}</h3>
-    <p>${data.responsable}</p>
-    <p>${data.fecha_visita} ${data.hora_visita}</p>
-    <p>${data.direccion}</p>
+  // VALIDACIÓN SIMPLE
+  for (let k of ["usuario","fecha_visita","hora_visita","nombre_negocio","responsable","direccion","telefono"]) {
+    if (!data[k]) return alert("Faltan campos");
+  }
+
+  // ===== PREVIEW BONITA =====
+  const previewHTML = `
+    <div style="text-align:center;margin-bottom:20px">
+      <h2 style="font-size:20px;font-weight:bold">CONSULTORÍA ENERGÉTICA</h2>
+      <div style="font-size:12px;color:#666">Registro de visita</div>
+    </div>
+
+    ${row("Agente", data.usuario)}
+    ${row("Fecha", data.fecha_visita)}
+    ${row("Hora", data.hora_visita)}
+    ${row("Negocio", data.nombre_negocio)}
+    ${row("Responsable", data.responsable)}
+    ${row("Dirección", data.direccion)}
+    ${row("Teléfono", data.telefono)}
+
+    ${data.observaciones ? row("Observaciones", data.observaciones) : ""}
+
+    <div style="margin-top:15px;font-size:11px;color:#999;text-align:center">
+      ID: ${data.visit_id}
+    </div>
   `;
+
+  const preview = document.getElementById("preview");
+  preview.innerHTML = previewHTML;
+
+  document.getElementById("previewContainer").classList.remove("hidden");
 
   await new Promise(r => setTimeout(r, 200));
 
-  const canvas = await html2canvas(preview);
+  // ===== IMAGEN =====
+  const canvas = await html2canvas(preview, {scale:2});
   data.imageBase64 = canvas.toDataURL("image/jpeg");
   data.filename = "visita.jpg";
 
   // ===== FORM DATA =====
   const formData = new FormData();
-  for (let key in data) {
-    formData.append(key, data[key]);
-  }
+  for (let key in data) formData.append(key, data[key]);
 
   // ===== ENVÍO =====
   await fetch(SCRIPT_URL, {
@@ -81,7 +136,21 @@ async function guardar() {
     body: formData
   });
 
-  alert("Guardado correctamente");
+  alert("✅ Guardado");
+
+  document.querySelectorAll("input, textarea").forEach(el => el.value = "");
+}
+
+// HELPERS
+function val(id){ return document.getElementById(id).value.trim(); }
+
+function row(label, value){
+  return `
+    <div style="margin-bottom:10px">
+      <div style="font-size:11px;color:#888">${label}</div>
+      <div style="font-weight:600">${value}</div>
+    </div>
+  `;
 }
 
 </script>
