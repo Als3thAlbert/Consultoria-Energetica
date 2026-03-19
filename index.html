@@ -1,467 +1,90 @@
 <!DOCTYPE html>
 <html lang="es">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Registro de Visitas | Sistema Comercial</title>
-    
-    <script src="https://html2canvas.hertzen.com/dist/html2canvas.min.js"></script>
-    <script src="https://cdn.tailwindcss.com"></script>
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
-    
-    <style>
-        body { font-family: 'Inter', sans-serif; }
-        
-        /* Gradiente de tu color original #6D9BA6 mejorado */
-        .bg-brand {
-            background: linear-gradient(135deg, #6D9BA6 0%, #5A8A95 50%, #4A7984 100%);
-        }
-        
-        .glass-panel {
-            background: rgba(255, 255, 255, 0.95);
-            backdrop-filter: blur(20px);
-            border: 1px solid rgba(255, 255, 255, 0.3);
-        }
-        
-        .input-elegant {
-            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-            border: 2px solid transparent;
-        }
-        
-        .input-elegant:focus {
-            transform: translateY(-2px);
-            box-shadow: 0 10px 40px -10px rgba(109, 155, 166, 0.4);
-            border-color: #6D9BA6;
-        }
-        
-        .btn-morph {
-            transition: all 0.3s ease;
-            position: relative;
-            overflow: hidden;
-        }
-        
-        .btn-morph:hover {
-            transform: translateY(-3px);
-            box-shadow: 0 20px 40px -10px rgba(34, 197, 94, 0.5);
-        }
-        
-        .btn-morph:active {
-            transform: translateY(-1px);
-        }
-        
-        .btn-morph::after {
-            content: '';
-            position: absolute;
-            top: 50%;
-            left: 50%;
-            width: 0;
-            height: 0;
-            border-radius: 50%;
-            background: rgba(255,255,255,0.3);
-            transform: translate(-50%, -50%);
-            transition: width 0.6s, height 0.6s;
-        }
-        
-        .btn-morph:active::after {
-            width: 300px;
-            height: 300px;
-        }
-        
-        .preview-card {
-            background: white;
-            color: #1f2937;
-            box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25);
-            border-radius: 16px;
-            overflow: hidden;
-        }
-        
-        .preview-header {
-            background: linear-gradient(135deg, #6D9BA6 0%, #4A7984 100%);
-            color: white;
-            padding: 20px;
-            text-align: center;
-        }
-        
-        .field-row {
-            border-bottom: 1px solid #e5e7eb;
-            padding: 16px 20px;
-        }
-        
-        .field-row:last-child {
-            border-bottom: none;
-        }
-        
-        .field-label {
-            font-size: 11px;
-            text-transform: uppercase;
-            letter-spacing: 0.05em;
-            color: #6b7280;
-            font-weight: 600;
-            margin-bottom: 4px;
-        }
-        
-        .field-value {
-            font-size: 16px;
-            color: #111827;
-            font-weight: 500;
-        }
-        
-        .badge-agent {
-            display: inline-block;
-            background: #6D9BA6;
-            color: white;
-            padding: 8px 20px;
-            border-radius: 20px;
-            font-size: 18px;
-            font-weight: 700;
-            margin-top: 10px;
-        }
-        
-        /* Animaciones */
-        @keyframes slideUp {
-            from { opacity: 0; transform: translateY(30px); }
-            to { opacity: 1; transform: translateY(0); }
-        }
-        
-        .animate-up {
-            animation: slideUp 0.6s ease-out forwards;
-        }
-        
-        .delay-100 { animation-delay: 0.1s; }
-        .delay-200 { animation-delay: 0.2s; }
-        
-        /* Loading overlay */
-        .loading-overlay {
-            position: fixed;
-            inset: 0;
-            background: rgba(0,0,0,0.8);
-            backdrop-filter: blur(5px);
-            display: none;
-            place-items: center;
-            z-index: 50;
-        }
-        
-        .loading-overlay.active {
-            display: grid;
-        }
-        
-        .spinner-ring {
-            width: 60px;
-            height: 60px;
-            border: 4px solid rgba(255,255,255,0.1);
-            border-left-color: #6D9BA6;
-            border-radius: 50%;
-            animation: spin 1s linear infinite;
-        }
-        
-        @keyframes spin {
-            to { transform: rotate(360deg); }
-        }
-        
-        /* Select custom */
-        select {
-            appearance: none;
-            background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 20 20'%3e%3cpath stroke='%236b7280' stroke-linecap='round' stroke-linejoin='round' stroke-width='1.5' d='M6 8l4 4 4-4'/%3e%3c/svg%3e");
-            background-position: right 12px center;
-            background-repeat: no-repeat;
-            background-size: 20px;
-        }
-    </style>
+<meta charset="UTF-8">
+<title>Registro Visitas</title>
+<script src="https://html2canvas.hertzen.com/dist/html2canvas.min.js"></script>
+<style>
+body { font-family: Arial; padding:20px; background:#f2f2f2; }
+input, textarea, select { width:100%; padding:10px; margin:5px 0; }
+button { padding:15px; background:green; color:white; border:none; cursor:pointer; }
+#preview { background:white; padding:20px; margin-top:20px; }
+</style>
 </head>
-<body class="bg-brand min-h-screen py-8 px-4">
 
-    <!-- Loading Overlay -->
-    <div id="loadingOverlay" class="loading-overlay">
-        <div class="text-center">
-            <div class="spinner-ring mx-auto mb-4"></div>
-            <p class="text-white text-lg font-medium">Generando evidencia...</p>
-            <p class="text-white/60 text-sm mt-2">Capturando pantalla y guardando</p>
-        </div>
-    </div>
+<body>
 
-    <div class="max-w-2xl mx-auto">
-        
-        <!-- Header -->
-        <div class="text-center mb-8 animate-up">
-            <div class="inline-flex items-center justify-center w-16 h-16 bg-white/20 rounded-2xl mb-4 backdrop-blur-sm">
-                <i class="fas fa-clipboard-check text-3xl text-white"></i>
-            </div>
-            <h1 class="text-3xl font-bold text-white mb-2">Registro de Visita</h1>
-            <p class="text-white/80 text-sm">Sistema de captura comercial</p>
-        </div>
+<h2>Registro de Visita</h2>
 
-        <!-- Formulario -->
-        <div class="glass-panel rounded-3xl p-6 sm:p-8 animate-up delay-100 shadow-2xl">
-            
-            <form id="visitaForm" onsubmit="event.preventDefault(); guardar();">
-                
-                <!-- Agente -->
-                <div class="mb-5">
-                    <label class="block text-sm font-semibold text-slate-700 mb-2">
-                        <i class="fas fa-user-tie mr-2 text-[#6D9BA6]"></i>
-                        Agente / Call Center
-                    </label>
-                    <select id="usuario" required
-                        class="input-elegant w-full px-4 py-3.5 bg-slate-50 rounded-xl text-slate-700 font-medium outline-none cursor-pointer">
-                        <option value="" disabled selected>Seleccionar agente...</option>
-                        <option value="Jeny">Jeny</option>
-                        <option value="Ariana">Ariana</option>
-                        <option value="Luis">Luis</option>
-                        <option value="Maria Carolina">Maria Carolina</option>
-                        <option value="Maria Carolina">TEST</option>
-                    </select>
-                </div>
+<select id="usuario">
+  <option value="Jeny">Jeny</option>
+  <option value="Ariana">Ariana</option>
+    <option value="Maria Carolina">Maria Carolina</option>
+  <option value="Luis">Luis</option>
+    <option value="Test">Test</option>
+</select>
 
-                <!-- Fecha y Hora -->
-                <div class="grid grid-cols-2 gap-4 mb-5">
-                    <div>
-                        <label class="block text-sm font-semibold text-slate-700 mb-2">
-                            <i class="fas fa-calendar-alt mr-2 text-[#6D9BA6]"></i>
-                            Fecha
-                        </label>
-                        <input type="date" id="fecha" required
-                            class="input-elegant w-full px-4 py-3.5 bg-slate-50 rounded-xl text-slate-700 outline-none">
-                    </div>
-                    <div>
-                        <label class="block text-sm font-semibold text-slate-700 mb-2">
-                            <i class="fas fa-clock mr-2 text-[#6D9BA6]"></i>
-                            Hora
-                        </label>
-                        <input type="time" id="hora" required
-                            class="input-elegant w-full px-4 py-3.5 bg-slate-50 rounded-xl text-slate-700 outline-none">
-                    </div>
-                </div>
+<input type="date" id="fecha">
+<input type="time" id="hora">
+<input type="text" id="negocio" placeholder="Negocio">
+<input type="text" id="responsable" placeholder="Responsable">
+<input type="text" id="direccion" placeholder="Dirección">
+<input type="text" id="telefono" placeholder="Teléfono">
+<textarea id="observaciones" placeholder="Observaciones"></textarea>
 
-                <!-- Negocio -->
-                <div class="mb-5">
-                    <label class="block text-sm font-semibold text-slate-700 mb-2">
-                        <i class="fas fa-store mr-2 text-[#6D9BA6]"></i>
-                        Nombre del Negocio
-                    </label>
-                    <input type="text" id="negocio" placeholder="Ej: Distribuidora El Sol" required
-                        class="input-elegant w-full px-4 py-3.5 bg-slate-50 rounded-xl text-slate-700 placeholder-slate-400 outline-none">
-                </div>
+<button onclick="guardar()">GUARDAR</button>
 
-                <!-- Responsable -->
-                <div class="mb-5">
-                    <label class="block text-sm font-semibold text-slate-700 mb-2">
-                        <i class="fas fa-id-card mr-2 text-[#6D9BA6]"></i>
-                        Responsable
-                    </label>
-                    <input type="text" id="responsable" placeholder="Nombre del contacto" required
-                        class="input-elegant w-full px-4 py-3.5 bg-slate-50 rounded-xl text-slate-700 placeholder-slate-400 outline-none">
-                </div>
+<div id="preview"></div>
 
-                <!-- Dirección -->
-                <div class="mb-5">
-                    <label class="block text-sm font-semibold text-slate-700 mb-2">
-                        <i class="fas fa-map-marker-alt mr-2 text-[#6D9BA6]"></i>
-                        Dirección
-                    </label>
-                    <input type="text" id="direccion" placeholder="Calle, número, colonia" required
-                        class="input-elegant w-full px-4 py-3.5 bg-slate-50 rounded-xl text-slate-700 placeholder-slate-400 outline-none">
-                </div>
+<script>
 
-                <!-- Teléfono -->
-                <div class="mb-5">
-                    <label class="block text-sm font-semibold text-slate-700 mb-2">
-                        <i class="fas fa-phone mr-2 text-[#6D9BA6]"></i>
-                        Teléfono
-                    </label>
-                    <input type="tel" id="telefono" placeholder="55 1234 5678" required
-                        class="input-elegant w-full px-4 py-3.5 bg-slate-50 rounded-xl text-slate-700 placeholder-slate-400 outline-none">
-                </div>
+const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbz71BF4e1YdfZTYbzat20EnIpkznPWLWOaptmSVyQKKWipYzaD6_nQTqcRUxIAV3yObew/exec";
 
-                <!-- Observaciones -->
-                <div class="mb-6">
-                    <label class="block text-sm font-semibold text-slate-700 mb-2">
-                        <i class="fas fa-comment-alt mr-2 text-[#6D9BA6]"></i>
-                        Observaciones
-                    </label>
-                    <textarea id="observaciones" rows="3" placeholder="Detalles adicionales de la visita..."
-                        class="input-elegant w-full px-4 py-3.5 bg-slate-50 rounded-xl text-slate-700 placeholder-slate-400 outline-none resize-none"></textarea>
-                </div>
+async function guardar() {
 
-                <!-- Botón Guardar -->
-                <button type="submit" id="btnGuardar"
-                    class="btn-morph w-full py-4 bg-gradient-to-r from-green-500 to-green-600 hover:from-green-600 hover:to-green-700 text-white rounded-2xl font-bold text-lg shadow-lg flex items-center justify-center gap-3">
-                    <i class="fas fa-camera text-xl"></i>
-                    <span>Capturar y Guardar</span>
-                </button>
-            </form>
-        </div>
+  const data = {
+    usuario: document.getElementById('usuario').value,
+    fecha_visita: document.getElementById('fecha').value,
+    hora_visita: document.getElementById('hora').value,
+    nombre_negocio: document.getElementById('negocio').value,
+    responsable: document.getElementById('responsable').value,
+    direccion: document.getElementById('direccion').value,
+    telefono: document.getElementById('telefono').value,
+    observaciones: document.getElementById('observaciones').value,
+    visit_id: Date.now()
+  };
 
-        <!-- Preview Container (Oculto hasta generar) -->
-        <div id="previewContainer" class="mt-8 hidden animate-up delay-200">
-            <div class="flex items-center justify-between mb-4">
-                <h3 class="text-white font-semibold flex items-center gap-2">
-                    <i class="fas fa-image"></i>
-                    Vista previa de evidencia
-                </h3>
-                <span class="text-white/60 text-xs">Se guardará esta imagen</span>
-            </div>
-            <div id="preview" class="preview-card">
-                <!-- El contenido se genera dinámicamente -->
-            </div>
-        </div>
+  // ===== PREVIEW =====
+  const preview = document.getElementById("preview");
+  preview.innerHTML = `
+    <h3>${data.nombre_negocio}</h3>
+    <p>${data.responsable}</p>
+    <p>${data.fecha_visita} ${data.hora_visita}</p>
+    <p>${data.direccion}</p>
+  `;
 
-        <!-- Toast Notification -->
-        <div id="toast" class="fixed bottom-6 left-1/2 transform -translate-x-1/2 bg-white text-slate-800 px-6 py-3 rounded-full shadow-2xl flex items-center gap-3 opacity-0 transition-all duration-300 translate-y-10 z-50">
-            <i id="toastIcon" class="fas fa-check-circle text-green-500 text-xl"></i>
-            <span id="toastMsg" class="font-medium">Registro guardado</span>
-        </div>
-    </div>
+  await new Promise(r => setTimeout(r, 200));
 
-    <script>
-        // ==========================================
-        // CONFIGURACIÓN - TU URL DE APPS SCRIPT
-        // ==========================================
-        const SCRIPT_URL = "https://script.google.com/macros/s/AKfycby4iqvcNn7jOUwaHKrxPCYN0I6BDTF5KBLdnhSGTk5Sj8-HW6ZsxfVmusbo3QAuJjStTA/exec";
-        
-        // IDs de tu configuración
-        const SHEET_ID = "1x8Nx-XdOGDMmcv51dG-hLHXCS8hHXfLKLMZjI6oaIyU";
-        const FOLDER_ID = "1tTD4eESdKBZMbQ3ctoQnUbcaAF3DQ-IV";
+  const canvas = await html2canvas(preview);
+  data.imageBase64 = canvas.toDataURL("image/jpeg");
+  data.filename = "visita.jpg";
 
-        // Inicializar fecha/hora actual
-        document.addEventListener('DOMContentLoaded', () => {
-            const ahora = new Date();
-            document.getElementById('fecha').value = ahora.toISOString().split('T')[0];
-            document.getElementById('hora').value = ahora.toTimeString().slice(0, 5);
-        });
+  // ===== FORM DATA =====
+  const formData = new FormData();
+  for (let key in data) {
+    formData.append(key, data[key]);
+  }
 
-        async function guardar() {
-            const btn = document.getElementById('btnGuardar');
-            const overlay = document.getElementById('loadingOverlay');
-            
-            // Validar campos
-            const campos = ['usuario', 'fecha', 'hora', 'negocio', 'responsable', 'direccion', 'telefono'];
-            for (let campo of campos) {
-                if (!document.getElementById(campo).value.trim()) {
-                    mostrarToast('Completa todos los campos requeridos', 'error');
-                    document.getElementById(campo).focus();
-                    document.getElementById(campo).classList.add('shake');
-                    setTimeout(() => document.getElementById(campo).classList.remove('shake'), 500);
-                    return;
-                }
-            }
+  // ===== ENVÍO =====
+  await fetch(SCRIPT_URL, {
+    method: "POST",
+    body: formData
+  });
 
-            // Recolectar datos
-            const data = {
-                usuario: document.getElementById('usuario').value,
-                fecha_visita: document.getElementById('fecha').value,
-                hora_visita: document.getElementById('hora').value,
-                nombre_negocio: document.getElementById('negocio').value,
-                responsable: document.getElementById('responsable').value,
-                direccion: document.getElementById('direccion').value,
-                telefono: document.getElementById('telefono').value,
-                observaciones: document.getElementById('observaciones').value,
-                visit_id: Date.now()
-            };
+  alert("Guardado correctamente");
+}
 
-            // Mostrar loading
-            overlay.classList.add('active');
-            btn.disabled = true;
+</script>
 
-            try {
-                // Generar HTML del preview (igual que tu versión pero mejorado visualmente)
-                const previewHTML = `
-                    <div class="preview-header">
-                        <i class="fas fa-clipboard-check text-4xl mb-2 opacity-80"></i>
-                        <h2 class="text-2xl font-bold">REGISTRO DE VISITA</h2>
-                        <p class="text-sm opacity-90 mt-1">Evidencia documental</p>
-                    </div>
-                    
-                    <div class="field-row">
-                        <div class="field-label">Nombre del Negocio</div>
-                        <div class="field-value text-xl text-[#6D9BA6] font-bold">${data.nombre_negocio}</div>
-                    </div>
-                    
-                    <div class="field-row">
-                        <div class="field-label">Responsable</div>
-                        <div class="field-value">${data.responsable}</div>
-                    </div>
-                    
-                    <div class="field-row">
-                        <div class="field-label">Fecha y Hora de Visita</div>
-                        <div class="field-value flex items-center gap-4">
-                            <span><i class="far fa-calendar mr-2 text-slate-400"></i>${formatearFecha(data.fecha_visita)}</span>
-                            <span><i class="far fa-clock mr-2 text-slate-400"></i>${data.hora_visita}</span>
-                        </div>
-                    </div>
-                    
-                    <div class="field-row">
-                        <div class="field-label">Dirección</div>
-                        <div class="field-value">${data.direccion}</div>
-                    </div>
-                    
-                    <div class="field-row">
-                        <div class="field-label">Teléfono</div>
-                        <div class="field-value text-[#6D9BA6] font-semibold">
-                            <i class="fas fa-phone mr-2"></i>${data.telefono}
-                        </div>
-                    </div>
-                    
-                    ${data.observaciones ? `
-                    <div class="field-row bg-slate-50">
-                        <div class="field-label">Observaciones</div>
-                        <div class="field-value text-slate-600 italic">"${data.observaciones}"</div>
-                    </div>
-                    ` : ''}
-                    
-                    <div class="p-6 text-center bg-slate-50">
-                        <div class="field-label mb-2">Registrado por</div>
-                        <span class="badge-agent">
-                            <i class="fas fa-headset mr-2"></i>${data.usuario}
-                        </span>
-                        <div class="mt-3 text-xs text-slate-400">
-                            ID: ${data.visit_id} • ${new Date().toLocaleString('es-MX')}
-                        </div>
-                    </div>
-                `;
-
-                // Renderizar en preview oculto para capturar
-                const previewDiv = document.getElementById('preview');
-                previewDiv.innerHTML = previewHTML;
-                
-                // Mostrar preview al usuario
-                document.getElementById('previewContainer').classList.remove('hidden');
-                
-                // Esperar renderizado
-                await new Promise(r => setTimeout(r, 300));
-                
-                // Capturar con html2canvas (igual que tu código)
-                const canvas = await html2canvas(previewDiv, {
-                    scale: 2,
-                    useCORS: true,
-                    backgroundColor: '#ffffff',
-                    logging: false
-                });
-                
-                data.imageBase64 = canvas.toDataURL("image/jpeg", 0.9);
-                data.filename = `visita_${data.visit_id}.jpg`;
-
-                // Preparar FormData
-                const formData = new FormData();
-                for (let key in data) {
-                    formData.append(key, data[key]);
-                }
-
-                // Enviar
-                const response = await fetch(SCRIPT_URL, {
-                    method: "POST",
-                    body: formData
-                });
-
-                const result = await response.json();
-
-                if (result.success) {
-                    mostrarToast('¡Registro guardado exitosamente!', 'success');
-                    
-                    // Reset form manteniendo usuario
-                    const usuarioActual = document.getElementById('usuario').value;
-                    document.getElementById('visitaForm').reset();
-                    document.getElementById('usuario').value = usuarioActual;
-                    
-                    const ahora = new Date();
-                    document.getElementById('fecha').value = ahor
+</body>
+</html>
