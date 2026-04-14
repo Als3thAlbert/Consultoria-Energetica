@@ -1,0 +1,1473 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Poster PRO+ — Editor de Carteles Clubbing</title>
+<link href="https://fonts.googleapis.com/css2?family=Anton&family=Montserrat:wght@300;400;700;900&display=swap" rel="stylesheet">
+<script src="https://cdn.jsdelivr.net/npm/html2canvas@1.4.1/dist/html2canvas.min.js"></script>
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+:root{
+  --accent:#ff0055;
+  --accent-dark:#8c1d18;
+  --bg:#0a0a0a;
+  --panel:#111;
+  --border:#222;
+  --text:#fff;
+  --text-dim:#888;
+}
+body{
+  font-family:Montserrat,sans-serif;
+  background:var(--bg);
+  color:var(--text);
+  min-height:100vh;
+  overflow-x:hidden;
+}
+.app{
+  display:flex;
+  min-height:100vh;
+  flex-direction:column;
+}
+@media(min-width:1024px){
+  .app{flex-direction:row}
+}
+
+/* SIDEBAR */
+.sidebar{
+  width:100%;
+  max-height:50vh;
+  overflow-y:auto;
+  background:var(--panel);
+  border-bottom:1px solid var(--border);
+  padding:15px;
+}
+@media(min-width:1024px){
+  .sidebar{
+    width:380px;
+    max-height:100vh;
+    border-right:1px solid var(--border);
+    border-bottom:none;
+  }
+}
+.sidebar h2{
+  font-family:Anton,sans-serif;
+  font-size:24px;
+  margin-bottom:20px;
+  color:var(--accent);
+  text-transform:uppercase;
+  letter-spacing:2px;
+}
+.section{
+  margin-bottom:15px;
+  border:1px solid var(--border);
+  border-radius:8px;
+  overflow:hidden;
+}
+.section-header{
+  background:#1a1a1a;
+  padding:12px 15px;
+  cursor:pointer;
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+  font-weight:700;
+  font-size:13px;
+  text-transform:uppercase;
+  letter-spacing:1px;
+}
+.section-header:hover{background:#222}
+.section-header::after{
+  content:'▼';
+  font-size:10px;
+  transition:transform 0.3s;
+}
+.section.collapsed .section-header::after{transform:rotate(-90deg)}
+.section-content{
+  padding:15px;
+  display:flex;
+  flex-direction:column;
+  gap:12px;
+}
+.section.collapsed .section-content{display:none}
+
+/* CONTROLES */
+label{
+  font-size:11px;
+  text-transform:uppercase;
+  letter-spacing:1px;
+  color:var(--text-dim);
+  margin-bottom:4px;
+  display:block;
+}
+input[type="text"],input[type="number"],input[type="url"],select{
+  width:100%;
+  padding:10px 12px;
+  background:#000;
+  border:1px solid var(--border);
+  color:var(--text);
+  font-family:Montserrat,sans-serif;
+  font-size:13px;
+  border-radius:4px;
+  transition:border-color 0.2s;
+}
+input:focus,select:focus{
+  outline:none;
+  border-color:var(--accent);
+}
+input[type="range"]{
+  width:100%;
+  margin:8px 0;
+  accent-color:var(--accent);
+  height:6px;
+  background:#333;
+  border-radius:3px;
+  -webkit-appearance:none;
+  appearance:none;
+}
+input[type="range"]::-webkit-slider-thumb{
+  -webkit-appearance:none;
+  appearance:none;
+  width:16px;
+  height:16px;
+  background:var(--accent);
+  border-radius:50%;
+  cursor:pointer;
+}
+input[type="range"]::-moz-range-thumb{
+  width:16px;
+  height:16px;
+  background:var(--accent);
+  border-radius:50%;
+  cursor:pointer;
+  border:none;
+}
+.range-value{
+  text-align:right;
+  font-size:12px;
+  color:var(--accent);
+  font-weight:700;
+}
+.row{
+  display:grid;
+  grid-template-columns:1fr 1fr;
+  gap:10px;
+}
+.row-3{
+  display:grid;
+  grid-template-columns:repeat(3,1fr);
+  gap:10px;
+}
+.file-input-wrapper{
+  position:relative;
+  overflow:hidden;
+  display:inline-block;
+  width:100%;
+}
+.file-input-wrapper input[type=file]{
+  position:absolute;
+  left:-9999px;
+}
+.file-btn{
+  display:block;
+  width:100%;
+  padding:10px;
+  background:#1a1a1a;
+  border:1px dashed var(--border);
+  color:var(--text-dim);
+  text-align:center;
+  cursor:pointer;
+  border-radius:4px;
+  font-size:12px;
+  transition:all 0.2s;
+}
+.file-btn:hover{
+  border-color:var(--accent);
+  color:var(--accent);
+}
+.toggle-btn{
+  display:flex;
+  align-items:center;
+  gap:10px;
+  cursor:pointer;
+  font-size:13px;
+}
+.toggle-btn input[type="checkbox"]{
+  width:20px;
+  height:20px;
+  accent-color:var(--accent);
+}
+
+/* ARTIST LIST */
+.artist-item{
+  background:#0a0a0a;
+  border:1px solid var(--border);
+  border-radius:6px;
+  padding:12px;
+  margin-bottom:10px;
+  position:relative;
+}
+.artist-header{
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+  margin-bottom:10px;
+}
+.artist-name-input{
+  flex:1;
+  margin-right:10px;
+}
+.artist-drag{
+  cursor:grab;
+  color:var(--text-dim);
+  padding:5px;
+}
+.artist-drag:active{cursor:grabbing}
+.artist-controls{
+  display:grid;
+  grid-template-columns:1fr 1fr;
+  gap:8px;
+}
+.artist-controls.full-width{grid-template-columns:1fr}
+.remove-artist{
+  position:absolute;
+  top:5px;
+  right:5px;
+  width:24px;
+  height:24px;
+  background:transparent;
+  border:none;
+  color:var(--text-dim);
+  cursor:pointer;
+  font-size:18px;
+  line-height:1;
+}
+.remove-artist:hover{color:#ff0055}
+.add-btn{
+  width:100%;
+  padding:12px;
+  background:transparent;
+  border:2px dashed var(--border);
+  color:var(--text);
+  cursor:pointer;
+  border-radius:6px;
+  font-weight:700;
+  text-transform:uppercase;
+  letter-spacing:1px;
+  font-size:12px;
+  transition:all 0.2s;
+}
+.add-btn:hover{
+  border-color:var(--accent);
+  color:var(--accent);
+}
+.action-btn{
+  width:100%;
+  padding:14px;
+  background:var(--accent-dark);
+  border:none;
+  color:#fff;
+  font-weight:900;
+  text-transform:uppercase;
+  letter-spacing:2px;
+  cursor:pointer;
+  border-radius:6px;
+  margin-top:10px;
+  transition:background 0.2s;
+}
+.action-btn:hover{background:var(--accent)}
+.action-btn.secondary{
+  background:#222;
+  font-size:12px;
+  padding:10px;
+}
+.action-btn.secondary:hover{background:#333}
+
+/* PREVIEW */
+.preview{
+  flex:1;
+  display:flex;
+  flex-direction:column;
+  align-items:center;
+  justify-content:flex-start;
+  padding:20px;
+  background:#050505;
+  overflow-y:auto;
+}
+.format-selector{
+  display:flex;
+  gap:10px;
+  margin-bottom:20px;
+  background:#111;
+  padding:5px;
+  border-radius:8px;
+}
+.format-btn{
+  padding:8px 16px;
+  background:transparent;
+  border:none;
+  color:var(--text-dim);
+  cursor:pointer;
+  border-radius:4px;
+  font-size:12px;
+  font-weight:700;
+  text-transform:uppercase;
+}
+.format-btn.active{
+  background:var(--accent);
+  color:#fff;
+}
+.poster-container{
+  position:relative;
+  box-shadow:0 20px 60px rgba(0,0,0,0.8);
+  transition:all 0.3s;
+}
+#poster{
+  position:relative;
+  overflow:hidden;
+  background:#000;
+}
+#poster.format-4-5{width:400px;height:500px}
+#poster.format-9-16{width:360px;height:640px}
+#poster.format-square{width:400px;height:400px}
+
+/* CAPAS */
+.poster-layer{
+  position:absolute;
+  top:0;
+  left:0;
+  width:100%;
+  height:100%;
+  pointer-events:none;
+}
+.bg-layer{z-index:1}
+.watermark-layer{z-index:2}
+.overlay-layer{z-index:10}
+.content-layer{
+  z-index:5;
+  position:relative;
+  height:100%;
+  display:flex;
+  flex-direction:column;
+  padding:var(--global-margin, 40px) calc((100% - var(--content-width, 90%)) / 2);
+  max-width:900px;
+  margin:0 auto;
+  overflow:hidden;
+}
+.footer-logo-layer{
+  z-index:6;
+  position:absolute;
+  bottom:80px;
+  left:0;
+  width:100%;
+  display:flex;
+  justify-content:center;
+  pointer-events:none;
+}
+
+/* ELEMENTOS DEL POSTER */
+.poster-header{
+  text-align:center;
+  margin-bottom:20px;
+}
+.main-logo{
+  max-width:80%;
+  margin:0 auto 15px;
+  display:block;
+}
+.club-name{
+  font-family:Anton,sans-serif;
+  font-size:48px;
+  line-height:1;
+  text-transform:uppercase;
+  letter-spacing:4px;
+  margin-bottom:8px;
+  opacity:0.95;
+}
+.info-strip{
+  font-size:10px;
+  text-transform:uppercase;
+  letter-spacing:2px;
+  opacity:0.6;
+  display:flex;
+  justify-content:center;
+  align-items:center;
+  gap:8px;
+  flex-wrap:wrap;
+}
+.info-separator{color:var(--accent);font-weight:900}
+
+.event-title-container{
+  margin:20px 0;
+  position:relative;
+}
+.event-title{
+  font-family:Anton,sans-serif;
+  font-size:48px;
+  line-height:0.9;
+  text-transform:uppercase;
+  letter-spacing:var(--title-tracking, 4px);
+  text-align:center;
+  position:relative;
+}
+.event-title.align-left{
+  text-align:left;
+  margin-left:var(--title-margin, 0);
+}
+.event-title.align-right{
+  text-align:right;
+  margin-right:var(--title-margin, 0);
+}
+
+/* DEBUG BOUNDS */
+.show-debug .event-title-container{outline:2px solid magenta;outline-offset:4px}
+.show-debug .artist-name{outline:2px solid red;outline-offset:2px}
+
+/* LINEUP */
+.lineup-container{
+  flex:1;
+  display:flex;
+  flex-direction:column;
+  justify-content:center;
+  gap:var(--artist-spacing, 20px);
+  margin:20px 0;
+  position:relative;
+  --tracking:2px;
+}
+.lineup-container.dense{
+  justify-content:flex-start;
+  overflow-y:auto;
+}
+.lineup-disabled{display:none}
+.artist-name{
+  font-family:Anton,sans-serif;
+  line-height:var(--line-height, 1.1);
+  letter-spacing:var(--tracking);
+  position:relative;
+  cursor:grab;
+  transition:opacity 0.2s;
+  user-select:none;
+  opacity:var(--artist-opacity, 1);
+  word-break:break-word;
+}
+.artist-name:hover{opacity:calc(var(--artist-opacity, 1) * 0.8)}
+.artist-name.dragging{opacity:0.3;cursor:grabbing}
+.artist-name.size-xs{font-size:28px}
+.artist-name.size-s{font-size:36px}
+.artist-name.size-m{font-size:48px}
+.artist-name.size-l{font-size:64px}
+.artist-name.size-xl{font-size:80px}
+.artist-name.align-left{text-align:left;padding-left:var(--artist-margin, 0)}
+.artist-name.align-center{text-align:center}
+.artist-name.align-right{text-align:right;padding-right:var(--artist-margin, 0)}
+
+/* FOOTER */
+.poster-footer{
+  text-align:center;
+  font-size:11px;
+  text-transform:uppercase;
+  letter-spacing:1px;
+  opacity:0.8;
+  line-height:var(--footer-line-height, 1.6);
+  margin-top:auto;
+  padding-top:20px;
+}
+.footer-logo-img{
+  max-width:120px;
+  margin-bottom:10px;
+  opacity:0.9;
+}
+
+/* OVERLAY EFECTOS */
+.grain-overlay{
+  position:absolute;
+  top:0;
+  left:0;
+  width:100%;
+  height:100%;
+  opacity:0.05;
+  pointer-events:none;
+  background-image:url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noiseFilter'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noiseFilter)'/%3E%3C/svg%3E");
+}
+.vignette{
+  position:absolute;
+  top:0;
+  left:0;
+  width:100%;
+  height:100%;
+  background:radial-gradient(ellipse at center, transparent 0%, transparent 40%, rgba(0,0,0,0.6) 100%);
+  pointer-events:none;
+}
+
+/* SCROLLBAR */
+::-webkit-scrollbar{width:6px}
+::-webkit-scrollbar-track{background:var(--bg)}
+::-webkit-scrollbar-thumb{background:var(--border);border-radius:3px}
+::-webkit-scrollbar-thumb:hover{background:var(--accent)}
+
+/* LOADING */
+.loading{
+  position:fixed;
+  top:0;
+  left:0;
+  width:100%;
+  height:100%;
+  background:rgba(0,0,0,0.9);
+  display:none;
+  justify-content:center;
+  align-items:center;
+  z-index:1000;
+  flex-direction:column;
+  gap:20px;
+}
+.loading.active{display:flex}
+.spinner{
+  width:50px;
+  height:50px;
+  border:3px solid var(--border);
+  border-top-color:var(--accent);
+  border-radius:50%;
+  animation:spin 1s linear infinite;
+}
+@keyframes spin{to{transform:rotate(360deg)}}
+</style>
+</head>
+<body>
+
+<div class="app">
+  <!-- SIDEBAR -->
+  <div class="sidebar">
+    <h2>Poster PRO+</h2>
+    
+    <!-- CAPAS -->
+    <div class="section" id="section-layers">
+      <div class="section-header" onclick="toggleSection('layers')">Capas Visuales</div>
+      <div class="section-content">
+        <label>Background (imagen)</label>
+        <div class="file-input-wrapper">
+          <input type="file" id="bgFile" accept="image/*" onchange="handleBgFile(event)">
+          <label for="bgFile" class="file-btn">📁 Subir imagen de fondo</label>
+        </div>
+        <input type="url" id="bgUrl" placeholder="O pegar URL..." oninput="updateBgFromUrl()">
+        <label>Opacidad Background</label>
+        <input type="range" id="bgOpacity" min="0" max="100" value="100" oninput="updatePreview()">
+        <span class="range-value" id="bgOpacityVal">100%</span>
+        
+        <label>Filtro oscuro</label>
+        <div class="toggle-btn">
+          <input type="checkbox" id="darkFilter" onchange="updatePreview()">
+          <span>Aplicar overlay oscuro</span>
+        </div>
+        
+        <hr style="border-color:var(--border);margin:10px 0">
+        
+        <label>Watermark (esquina sup. izq)</label>
+        <div class="file-input-wrapper">
+          <input type="file" id="watermarkFile" accept="image/*" onchange="handleWatermarkFile(event)">
+          <label for="watermarkFile" class="file-btn">📁 Subir watermark</label>
+        </div>
+        <div class="row">
+          <div>
+            <label>Tamaño</label>
+            <select id="watermarkSize" onchange="updatePreview()">
+              <option value="60">S</option>
+              <option value="100" selected>M</option>
+              <option value="140">L</option>
+            </select>
+          </div>
+          <div>
+            <label>Opacidad</label>
+            <input type="range" id="watermarkOpacity" min="0" max="100" value="80" oninput="updatePreview()">
+            <span class="range-value" id="watermarkOpacityVal">80%</span>
+          </div>
+        </div>
+        
+        <hr style="border-color:var(--border);margin:10px 0">
+        
+        <label>Foreground / Textura</label>
+        <div class="file-input-wrapper">
+          <input type="file" id="overlayFile" accept="image/*" onchange="handleOverlayFile(event)">
+          <label for="overlayFile" class="file-btn">📁 Subir textura/ruido</label>
+        </div>
+        <label>Opacidad Overlay</label>
+        <input type="range" id="overlayOpacity" min="0" max="100" value="30" oninput="updatePreview()">
+        <span class="range-value" id="overlayOpacityVal">30%</span>
+        
+        <div class="toggle-btn">
+          <input type="checkbox" id="grainEffect" checked onchange="updatePreview()">
+          <span>Efecto grain/ruido SVG</span>
+        </div>
+        
+        <hr style="border-color:var(--border);margin:10px 0">
+        
+        <label>Footer Logo (sobre dirección)</label>
+        <div class="file-input-wrapper">
+          <input type="file" id="footerLogoFile" accept="image/*" onchange="handleFooterLogoFile(event)">
+          <label for="footerLogoFile" class="file-btn">📁 Subir logo footer</label>
+        </div>
+        <div class="row">
+          <div>
+            <label>Tamaño</label>
+            <input type="range" id="footerLogoSize" min="50" max="200" value="100" oninput="updatePreview()">
+            <span class="range-value" id="footerLogoSizeVal">100px</span>
+          </div>
+          <div>
+            <label>Opacidad</label>
+            <input type="range" id="footerLogoOpacity" min="0" max="100" value="90" oninput="updatePreview()">
+            <span class="range-value" id="footerLogoOpacityVal">90%</span>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- HEADER -->
+    <div class="section" id="section-header">
+      <div class="section-header" onclick="toggleSection('header')">Header / Info</div>
+      <div class="section-content">
+        <label>Logo Principal (imagen opcional)</label>
+        <div class="file-input-wrapper">
+          <input type="file" id="mainLogoFile" accept="image/*" onchange="handleMainLogoFile(event)">
+          <label for="mainLogoFile" class="file-btn">📁 Subir logo</label>
+        </div>
+        <div class="row">
+          <div>
+            <label>Tamaño Logo</label>
+            <select id="mainLogoSize" onchange="updatePreview()">
+              <option value="120">S</option>
+              <option value="180" selected>M</option>
+              <option value="240">L</option>
+            </select>
+          </div>
+          <div>
+            <label>Opacidad</label>
+            <input type="range" id="mainLogoOpacity" min="0" max="100" value="100" oninput="updatePreview()">
+            <span class="range-value" id="mainLogoOpacityVal">100%</span>
+          </div>
+        </div>
+        
+        <hr style="border-color:var(--border);margin:10px 0">
+        
+        <label>Info Strip (separadores automáticos)</label>
+        <div class="row-3">
+          <input type="text" id="infoDate" placeholder="Fecha" value="3 APRIL" oninput="updatePreview()">
+          <input type="text" id="infoYear" placeholder="Año" value="2026" oninput="updatePreview()">
+          <input type="text" id="infoClub" placeholder="Club" value="DETROIT CLUB" oninput="updatePreview()">
+        </div>
+        <div class="row">
+          <input type="text" id="infoCity" placeholder="Ciudad" value="BARCELONA" oninput="updatePreview()">
+          <input type="text" id="infoTime" placeholder="Horario" value="23:59 - 06:00" oninput="updatePreview()">
+        </div>
+        <label>Opacidad Header</label>
+        <input type="range" id="headerOpacity" min="0" max="100" value="100" oninput="updatePreview()">
+        <span class="range-value" id="headerOpacityVal">100%</span>
+      </div>
+    </div>
+
+    <!-- EVENT TITLE -->
+    <div class="section" id="section-title">
+      <div class="section-header" onclick="toggleSection('title')">Event Title</div>
+      <div class="section-content">
+        <input type="text" id="eventName" placeholder="Nombre del evento" value="HARDPARTY" oninput="updatePreview()">
+        <div class="row">
+          <div>
+            <label>Tamaño (px)</label>
+            <input type="range" id="titleSize" min="30" max="100" value="48" oninput="updatePreview()">
+            <span class="range-value" id="titleSizeVal">48px</span>
+          </div>
+          <div>
+            <label>Opacidad</label>
+            <input type="range" id="titleOpacity" min="0" max="100" value="100" oninput="updatePreview()">
+            <span class="range-value" id="titleOpacityVal">100%</span>
+          </div>
+        </div>
+        <label>Tracking (espaciado)</label>
+        <input type="range" id="titleTracking" min="0" max="20" value="4" oninput="updatePreview()">
+        <span class="range-value" id="titleTrackingVal">4px</span>
+        <label>Alineación</label>
+        <select id="titleAlign" onchange="updatePreview()">
+          <option value="center">Centro</option>
+          <option value="left">Izquierda (+margen)</option>
+          <option value="right">Derecha (+margen)</option>
+        </select>
+        <label>Margen lateral (si left/right)</label>
+        <input type="range" id="titleMargin" min="0" max="50" value="20" oninput="updatePreview()">
+        <span class="range-value" id="titleMarginVal">20px</span>
+      </div>
+    </div>
+
+    <!-- LINEUP -->
+    <div class="section" id="section-lineup">
+      <div class="section-header" onclick="toggleSection('lineup')">Line-up</div>
+      <div class="section-content">
+        <div class="toggle-btn" style="margin-bottom:15px">
+          <input type="checkbox" id="lineupEnabled" checked onchange="updatePreview()">
+          <span>Mostrar line-up</span>
+        </div>
+        
+        <label>Controles Globales</label>
+        <div class="row">
+          <div>
+            <label>Interlineado</label>
+            <input type="range" id="globalLineHeight" min="0.8" max="2" step="0.1" value="1.1" oninput="updatePreview()">
+            <span class="range-value" id="globalLineHeightVal">1.1</span>
+          </div>
+          <div>
+            <label>Spacing artistas</label>
+            <input type="range" id="artistSpacing" min="0" max="40" value="20" oninput="updatePreview()">
+            <span class="range-value" id="artistSpacingVal">20px</span>
+          </div>
+        </div>
+        <label>Tracking global</label>
+        <input type="range" id="globalTracking" min="0" max="10" value="2" oninput="updatePreview()">
+        <span class="range-value" id="globalTrackingVal">2px</span>
+        
+        <hr style="border-color:var(--border);margin:15px 0">
+        
+        <label>Artistas (drag & drop en preview)</label>
+        <div id="artistsList"></div>
+        <button class="add-btn" onclick="addArtist()">+ Añadir Artista</button>
+        
+        <label style="margin-top:15px">Opacidad Global Line-up</label>
+        <input type="range" id="lineupOpacity" min="0" max="100" value="100" oninput="updatePreview()">
+        <span class="range-value" id="lineupOpacityVal">100%</span>
+      </div>
+    </div>
+
+    <!-- FOOTER -->
+    <div class="section" id="section-footer">
+      <div class="section-header" onclick="toggleSection('footer')">Footer</div>
+      <div class="section-content">
+        <input type="text" id="footerWeb" placeholder="Web" value="detroitbcn.com" oninput="updatePreview()">
+        <input type="text" id="footerAddress" placeholder="Dirección" value="Passatge Can Politic 13" oninput="updatePreview()">
+        <label>Alineación</label>
+        <select id="footerAlign" onchange="updatePreview()">
+          <option value="center">Centro</option>
+          <option value="left">Izquierda</option>
+          <option value="right">Derecha</option>
+        </select>
+        <label>Interlineado footer</label>
+        <input type="range" id="footerLineHeight" min="1" max="3" step="0.1" value="1.6" oninput="updatePreview()">
+        <span class="range-value" id="footerLineHeightVal">1.6</span>
+        <label>Opacidad Footer</label>
+        <input type="range" id="footerOpacity" min="0" max="100" value="80" oninput="updatePreview()">
+        <span class="range-value" id="footerOpacityVal">80%</span>
+      </div>
+    </div>
+
+    <!-- AJUSTES GLOBALES -->
+    <div class="section" id="section-global">
+      <div class="section-header" onclick="toggleSection('global')">Ajustes Globales</div>
+      <div class="section-content">
+        <div class="toggle-btn" style="margin-bottom:15px">
+          <input type="checkbox" id="debugBounds" onchange="toggleDebug()">
+          <span>Mostrar bounds debug (rojo/magenta)</span>
+        </div>
+        <label>Márgenes generales</label>
+        <input type="range" id="globalMargin" min="20" max="60" value="40" oninput="updatePreview()">
+        <span class="range-value" id="globalMarginVal">40px</span>
+        <label>Ancho de contenido</label>
+        <input type="range" id="contentWidth" min="60" max="100" value="90" oninput="updatePreview()">
+        <span class="range-value" id="contentWidthVal">90%</span>
+      </div>
+    </div>
+
+    <!-- EXPORT -->
+    <div class="section" id="section-export">
+      <div class="section-header" onclick="toggleSection('export')">Export / Presets</div>
+      <div class="section-content">
+        <button class="action-btn secondary" onclick="savePreset()">💾 Guardar Preset</button>
+        <button class="action-btn secondary" onclick="loadPreset()">📂 Cargar Preset</button>
+        <button class="action-btn" onclick="downloadPoster()">⬇ EXPORTAR POSTER</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- PREVIEW -->
+  <div class="preview">
+    <div class="format-selector">
+      <button class="format-btn" onclick="setFormat('4-5')">4:5</button>
+      <button class="format-btn active" onclick="setFormat('9-16')">9:16</button>
+      <button class="format-btn" onclick="setFormat('square')">1:1</button>
+    </div>
+    
+    <div class="poster-container">
+      <div id="poster" class="format-9-16">
+        <!-- Background -->
+        <div class="poster-layer bg-layer" id="bgLayer"></div>
+        
+        <!-- Watermark -->
+        <div class="poster-layer watermark-layer" id="watermarkLayer" style="padding:20px;display:flex;justify-content:flex-start;align-items:flex-start"></div>
+        
+        <!-- Vignette -->
+        <div class="vignette" id="vignetteLayer" style="display:none"></div>
+        
+        <!-- Content -->
+        <div class="content-layer" id="contentLayer">
+          <div class="poster-header" id="headerLayer">
+            <img class="main-logo" id="mainLogoImg" style="display:none">
+            <div class="club-name" id="clubNameText">DETROIT CLUB</div>
+            <div class="info-strip" id="infoStrip">
+              <span>3 APRIL</span>
+              <span class="info-separator">|</span>
+              <span>2026</span>
+              <span class="info-separator">|</span>
+              <span>BARCELONA</span>
+              <span class="info-separator">|</span>
+              <span>23:59 - 06:00</span>
+            </div>
+          </div>
+          
+          <div class="event-title-container" id="titleContainer">
+            <div class="event-title" id="eventTitle">HARDPARTY</div>
+          </div>
+          
+          <div class="lineup-container" id="lineupContainer">
+            <div class="artist-name size-m align-center" draggable="true" data-id="0" style="--artist-opacity:1">TONO</div>
+            <div class="artist-name size-m align-center" draggable="true" data-id="1" style="--artist-opacity:1">AARON BLACK</div>
+            <div class="artist-name size-m align-center" draggable="true" data-id="2" style="--artist-opacity:1">CECILIA TOSH</div>
+          </div>
+          
+          <div class="poster-footer" id="footerLayer">
+            <div class="footer-logo-layer" id="footerLogoContainer"></div>
+            <div id="footerText">detroitbcn.com<br>Passatge Can Politic 13</div>
+          </div>
+        </div>
+        
+        <!-- Grain -->
+        <div class="grain-overlay" id="grainLayer"></div>
+        
+        <!-- Foreground Overlay -->
+        <div class="poster-layer overlay-layer" id="overlayLayer"></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Loading -->
+<div class="loading" id="loading">
+  <div class="spinner"></div>
+  <div>Generando imagen...</div>
+</div>
+
+<script>
+// ESTADO GLOBAL
+let state = {
+  format: '9-16',
+  artists: [
+    {id: 0, name: 'TONO', size: 'm', align: 'center', margin: 0, opacity: 100},
+    {id: 1, name: 'AARON BLACK', size: 'm', align: 'center', margin: 0, opacity: 100},
+    {id: 2, name: 'CECILIA TOSH', size: 'm', align: 'center', margin: 0, opacity: 100}
+  ],
+  nextId: 3,
+  bgImage: null,
+  watermarkImage: null,
+  overlayImage: null,
+  mainLogoImage: null,
+  footerLogoImage: null
+};
+
+// INICIALIZACION
+document.addEventListener('DOMContentLoaded', () => {
+  initDragAndDrop();
+  updatePreview();
+  updateRangeValues();
+  
+  // Auto-colapsar algunas secciones en mobile
+  if(window.innerWidth < 1024){
+    toggleSection('layers');
+    toggleSection('global');
+  }
+});
+
+// TOGGLE SECCIONES
+function toggleSection(id){
+  const section = document.getElementById('section-' + id);
+  section.classList.toggle('collapsed');
+}
+
+// FORMATO
+function setFormat(fmt){
+  state.format = fmt;
+  document.querySelectorAll('.format-btn').forEach(b => b.classList.remove('active'));
+  event.target.classList.add('active');
+  const poster = document.getElementById('poster');
+  poster.className = 'format-' + fmt;
+  updatePreview();
+}
+
+// MANEJO DE ARCHIVOS
+function handleBgFile(e){
+  const file = e.target.files[0];
+  if(file){
+    const reader = new FileReader();
+    reader.onload = (e) => {
+      state.bgImage = e.target.result;
+      updatePreview();
+    };
+    reader.readAsDataURL(file);
+  }
+}
+
+function handleBgFromUrl(){
+  const url = document.getElementById('bgUrl').value;
+  if(url){
+    state.bgImage = url;
+    updatePreview();
+  }
+}
+
+function updateBgFromUrl(){handleBgFromUrl()}
+
+function handleWatermarkFile(e){
+  const file = e.target.files[0];
+  if(file){
+    const reader = new FileReader();
+    reader.onload = (e) => {
+      state.watermarkImage = e.target.result;
+      updatePreview();
+    };
+    reader.readAsDataURL(file);
+  }
+}
+
+function handleOverlayFile(e){
+  const file = e.target.files[0];
+  if(file){
+    const reader = new FileReader();
+    reader.onload = (e) => {
+      state.overlayImage = e.target.result;
+      updatePreview();
+    };
+    reader.readAsDataURL(file);
+  }
+}
+
+function handleMainLogoFile(e){
+  const file = e.target.files[0];
+  if(file){
+    const reader = new FileReader();
+    reader.onload = (e) => {
+      state.mainLogoImage = e.target.result;
+      updatePreview();
+    };
+    reader.readAsDataURL(file);
+  }
+}
+
+function handleFooterLogoFile(e){
+  const file = e.target.files[0];
+  if(file){
+    const reader = new FileReader();
+    reader.onload = (e) => {
+      state.footerLogoImage = e.target.result;
+      updatePreview();
+    };
+    reader.readAsDataURL(file);
+  }
+}
+
+// ARTISTAS
+function addArtist(){
+  const id = state.nextId++;
+  const artist = {id, name: 'NUEVO ARTISTA', size: 'm', align: 'center', margin: 0, opacity: 100};
+  state.artists.push(artist);
+  renderArtistsList();
+  updatePreview();
+}
+
+function removeArtist(id){
+  state.artists = state.artists.filter(a => a.id !== id);
+  renderArtistsList();
+  updatePreview();
+}
+
+function updateArtistName(id, value){
+  const artist = state.artists.find(a => a.id === id);
+  if(artist){
+    artist.name = value;
+    updatePreview();
+  }
+}
+
+function updateArtistSize(id, value){
+  const artist = state.artists.find(a => a.id === id);
+  if(artist){
+    artist.size = value;
+    updatePreview();
+  }
+}
+
+function updateArtistAlign(id, value){
+  const artist = state.artists.find(a => a.id === id);
+  if(artist){
+    artist.align = value;
+    updatePreview();
+  }
+}
+
+function updateArtistOpacity(id, value){
+  const artist = state.artists.find(a => a.id === id);
+  if(artist){
+    artist.opacity = parseInt(value);
+    updatePreview();
+  }
+}
+
+function renderArtistsList(){
+  const container = document.getElementById('artistsList');
+  container.innerHTML = state.artists.map((artist, index) => `
+    <div class="artist-item" data-id="${artist.id}">
+      <button class="remove-artist" onclick="removeArtist(${artist.id})">×</button>
+      <div class="artist-header">
+        <input type="text" class="artist-name-input" value="${artist.name}" 
+               oninput="updateArtistName(${artist.id}, this.value)" placeholder="Nombre artista">
+        <span class="artist-drag">⋮⋮</span>
+      </div>
+      <div class="artist-controls">
+        <select onchange="updateArtistSize(${artist.id}, this.value)">
+          <option value="xs" ${artist.size==='xs'?'selected':''}>XS</option>
+          <option value="s" ${artist.size==='s'?'selected':''}>S</option>
+          <option value="m" ${artist.size==='m'?'selected':''}>M</option>
+          <option value="l" ${artist.size==='l'?'selected':''}>L</option>
+          <option value="xl" ${artist.size==='xl'?'selected':''}>XL</option>
+        </select>
+        <select onchange="updateArtistAlign(${artist.id}, this.value)">
+          <option value="left" ${artist.align==='left'?'selected':''}>Left</option>
+          <option value="center" ${artist.align==='center'?'selected':''}>Center</option>
+          <option value="right" ${artist.align==='right'?'selected':''}>Right</option>
+        </select>
+      </div>
+      <div class="artist-controls full-width" style="margin-top:8px">
+        <label style="margin-bottom:4px">Opacidad</label>
+        <input type="range" min="0" max="100" value="${artist.opacity}" 
+               oninput="updateArtistOpacity(${artist.id}, this.value)" style="margin:0">
+        <span class="range-value">${artist.opacity}%</span>
+      </div>
+    </div>
+  `).join('');
+}
+
+// DRAG AND DROP
+let draggedElement = null;
+let draggedId = null;
+
+function initDragAndDrop(){
+  const container = document.getElementById('lineupContainer');
+  
+  container.addEventListener('dragstart', (e) => {
+    if(e.target.classList.contains('artist-name')){
+      draggedElement = e.target;
+      draggedId = parseInt(e.target.dataset.id);
+      e.target.classList.add('dragging');
+      e.dataTransfer.effectAllowed = 'move';
+    }
+  });
+  
+  container.addEventListener('dragend', (e) => {
+    if(e.target.classList.contains('artist-name')){
+      e.target.classList.remove('dragging');
+    }
+  });
+  
+  container.addEventListener('dragover', (e) => {
+    e.preventDefault();
+    const afterElement = getDragAfterElement(container, e.clientY);
+    if(draggedElement && afterElement){
+      container.insertBefore(draggedElement, afterElement);
+    } else if(draggedElement){
+      container.appendChild(draggedElement);
+    }
+  });
+  
+  container.addEventListener('drop', (e) => {
+    e.preventDefault();
+    // Actualizar orden en el estado
+    const newOrder = [...container.querySelectorAll('.artist-name')].map(el => parseInt(el.dataset.id));
+    const reorderedArtists = newOrder.map(id => state.artists.find(a => a.id === id)).filter(Boolean);
+    state.artists = reorderedArtists;
+    renderArtistsList();
+    updatePreview(); // <-- FIX: Ahora actualiza el preview completo
+  });
+}
+
+function getDragAfterElement(container, y){
+  const draggableElements = [...container.querySelectorAll('.artist-name:not(.dragging)')];
+  return draggableElements.reduce((closest, child) => {
+    const box = child.getBoundingClientRect();
+    const offset = y - box.top - box.height / 2;
+    if(offset < 0 && offset > closest.offset){
+      return {offset: offset, element: child};
+    }
+    return closest;
+  }, {offset: -Infinity}).element;
+}
+
+// UPDATE PREVIEW (TIEMPO REAL)
+function updatePreview(){
+  updateRangeValues();
+  
+  // Background
+  const bgLayer = document.getElementById('bgLayer');
+  const bgOpacity = document.getElementById('bgOpacity').value / 100;
+  if(state.bgImage){
+    bgLayer.style.background = `url(${state.bgImage}) center/cover no-repeat`;
+    bgLayer.style.opacity = bgOpacity;
+  } else {
+    bgLayer.style.background = '#000';
+    bgLayer.style.opacity = 1;
+  }
+  
+  // Dark filter / vignette
+  const vignette = document.getElementById('vignetteLayer');
+  const darkFilter = document.getElementById('darkFilter').checked;
+  vignette.style.display = darkFilter ? 'block' : 'none';
+  
+  // Watermark
+  const watermarkLayer = document.getElementById('watermarkLayer');
+  const watermarkSize = document.getElementById('watermarkSize').value;
+  const watermarkOpacity = document.getElementById('watermarkOpacity').value / 100;
+  if(state.watermarkImage){
+    watermarkLayer.innerHTML = `<img src="${state.watermarkImage}" style="width:${watermarkSize}px;opacity:${watermarkOpacity};max-width:30%">`;
+  } else {
+    watermarkLayer.innerHTML = '';
+  }
+  
+  // Grain
+  const grain = document.getElementById('grainLayer');
+  grain.style.display = document.getElementById('grainEffect').checked ? 'block' : 'none';
+  
+  // Foreground overlay
+  const overlayLayer = document.getElementById('overlayLayer');
+  const overlayOpacity = document.getElementById('overlayOpacity').value / 100;
+  if(state.overlayImage){
+    overlayLayer.style.background = `url(${state.overlayImage}) center/cover no-repeat`;
+    overlayLayer.style.opacity = overlayOpacity;
+  } else {
+    overlayLayer.style.background = 'transparent';
+  }
+  
+  // Main logo
+  const mainLogo = document.getElementById('mainLogoImg');
+  const mainLogoSize = document.getElementById('mainLogoSize').value;
+  const mainLogoOpacity = document.getElementById('mainLogoOpacity').value / 100;
+  if(state.mainLogoImage){
+    mainLogo.src = state.mainLogoImage;
+    mainLogo.style.display = 'block';
+    mainLogo.style.width = mainLogoSize + 'px';
+    mainLogo.style.opacity = mainLogoOpacity;
+  } else {
+    mainLogo.style.display = 'none';
+  }
+  
+  // Club name (texto si no hay logo)
+  const clubName = document.getElementById('clubNameText');
+  const clubValue = document.getElementById('infoClub').value;
+  clubName.textContent = clubValue;
+  clubName.style.display = state.mainLogoImage ? 'none' : 'block';
+  
+  // Info strip
+  const date = document.getElementById('infoDate').value;
+  const year = document.getElementById('infoYear').value;
+  const city = document.getElementById('infoCity').value;
+  const time = document.getElementById('infoTime').value;
+  const infoStrip = document.getElementById('infoStrip');
+  infoStrip.innerHTML = `
+    <span>${date}</span>
+    <span class="info-separator">|</span>
+    <span>${year}</span>
+    <span class="info-separator">|</span>
+    <span>${city}</span>
+    <span class="info-separator">|</span>
+    <span>${time}</span>
+  `;
+  
+  // Header opacity
+  const headerOpacity = document.getElementById('headerOpacity').value / 100;
+  document.getElementById('headerLayer').style.opacity = headerOpacity;
+  
+  // Event title
+  const eventTitle = document.getElementById('eventTitle');
+  const titleText = document.getElementById('eventName').value;
+  const titleSize = document.getElementById('titleSize').value;
+  const titleOpacity = document.getElementById('titleOpacity').value / 100;
+  const titleTracking = document.getElementById('titleTracking').value;
+  const titleAlign = document.getElementById('titleAlign').value;
+  const titleMargin = document.getElementById('titleMargin').value;
+  
+  eventTitle.textContent = titleText;
+  eventTitle.style.fontSize = titleSize + 'px';
+  eventTitle.style.opacity = titleOpacity;
+  eventTitle.style.setProperty('--title-tracking', titleTracking + 'px');
+  eventTitle.className = 'event-title align-' + titleAlign;
+  eventTitle.style.setProperty('--title-margin', titleMargin + 'px');
+  
+  // Title container debug
+  const titleContainer = document.getElementById('titleContainer');
+  if(document.getElementById('debugBounds').checked){
+    titleContainer.style.outline = '2px solid magenta';
+    titleContainer.style.outlineOffset = '4px';
+  } else {
+    titleContainer.style.outline = 'none';
+  }
+  
+  // Lineup
+  const lineupContainer = document.getElementById('lineupContainer');
+  const lineupEnabled = document.getElementById('lineupEnabled').checked;
+  const lineupOpacity = document.getElementById('lineupOpacity').value / 100;
+  const globalLineHeight = document.getElementById('globalLineHeight').value;
+  const artistSpacing = document.getElementById('artistSpacing').value;
+  const globalTracking = document.getElementById('globalTracking').value;
+  
+  if(!lineupEnabled){
+    lineupContainer.style.display = 'none';
+  } else {
+    lineupContainer.style.display = 'flex';
+    lineupContainer.style.opacity = lineupOpacity;
+    lineupContainer.style.setProperty('--line-height', globalLineHeight);
+    lineupContainer.style.setProperty('--artist-spacing', artistSpacing + 'px');
+    lineupContainer.style.setProperty('--tracking', globalTracking + 'px');
+    
+    // Auto-densidad según cantidad de artistas
+    const count = state.artists.length;
+    if(count <= 3){
+      lineupContainer.classList.remove('dense');
+      lineupContainer.style.justifyContent = 'center';
+    } else {
+      lineupContainer.classList.add('dense');
+      lineupContainer.style.justifyContent = 'flex-start';
+    }
+    
+    // Reconstruir artistas manteniendo drag & drop
+    const currentArtists = [...lineupContainer.querySelectorAll('.artist-name')];
+    const currentIds = currentArtists.map(el => parseInt(el.dataset.id));
+    const stateIds = state.artists.map(a => a.id);
+    
+    // Solo reconstruir si cambio el numero o orden de artistas
+    if(currentIds.length !== stateIds.length || !currentIds.every((id, i) => id === stateIds[i])){
+      lineupContainer.innerHTML = state.artists.map(artist => `
+        <div class="artist-name size-${artist.size} align-${artist.align}" 
+             draggable="true" 
+             data-id="${artist.id}"
+             style="--artist-opacity:${artist.opacity/100}">
+          ${artist.name}
+        </div>
+      `).join('');
+    } else {
+      // Actualizar clases y estilos sin destruir DOM (para no perder drag)
+      currentArtists.forEach((el, i) => {
+        const artist = state.artists[i];
+        el.className = `artist-name size-${artist.size} align-${artist.align}`;
+        el.style.setProperty('--artist-opacity', artist.opacity/100);
+        el.textContent = artist.name;
+        
+        // Debug bounds
+        if(document.getElementById('debugBounds').checked){
+          el.style.outline = '2px solid red';
+          el.style.outlineOffset = '2px';
+        } else {
+          el.style.outline = 'none';
+        }
+      });
+    }
+    
+    // Check overflow - auto scale si es necesario
+    const poster = document.getElementById('poster');
+    if(lineupContainer.scrollHeight > poster.offsetHeight * 0.6){
+      lineupContainer.style.transform = 'scale(0.9)';
+      lineupContainer.style.transformOrigin = 'center top';
+    } else {
+      lineupContainer.style.transform = 'none';
+    }
+  }
+  
+  // Footer logo
+  const footerLogoContainer = document.getElementById('footerLogoContainer');
+  const footerLogoSize = document.getElementById('footerLogoSize').value;
+  const footerLogoOpacity = document.getElementById('footerLogoOpacity').value / 100;
+  if(state.footerLogoImage){
+    footerLogoContainer.innerHTML = `<img src="${state.footerLogoImage}" class="footer-logo-img" style="width:${footerLogoSize}px;opacity:${footerLogoOpacity}">`;
+  } else {
+    footerLogoContainer.innerHTML = '';
+  }
+  
+  // Footer text
+  const footerText = document.getElementById('footerText');
+  const web = document.getElementById('footerWeb').value;
+  const address = document.getElementById('footerAddress').value;
+  const footerAlign = document.getElementById('footerAlign').value;
+  const footerLineHeight = document.getElementById('footerLineHeight').value;
+  const footerOpacity = document.getElementById('footerOpacity').value / 100;
+  
+  footerText.innerHTML = `${web}<br>${address}`;
+  footerText.style.textAlign = footerAlign;
+  footerText.parentElement.style.setProperty('--footer-line-height', footerLineHeight);
+  footerText.parentElement.style.opacity = footerOpacity;
+  
+  // Margenes globales
+  const globalMargin = document.getElementById('globalMargin').value;
+  const contentWidth = document.getElementById('contentWidth').value;
+  const contentLayer = document.getElementById('contentLayer');
+  contentLayer.style.setProperty('--global-margin', globalMargin + 'px');
+  contentLayer.style.setProperty('--content-width', contentWidth + '%');
+}
+
+function updateRangeValues(){
+  // Actualizar todos los valores mostrados de sliders
+  const ranges = [
+    ['bgOpacity','%'], ['watermarkOpacity','%'], ['overlayOpacity','%'],
+    ['mainLogoOpacity','%'], ['headerOpacity','%'], ['titleOpacity','%'],
+    ['titleSize','px'], ['titleTracking','px'], ['titleMargin','px'],
+    ['lineupOpacity','%'], ['artistSpacing','px'], ['footerOpacity','%'],
+    ['footerLogoSize','px'], ['footerLogoOpacity','%'], ['globalMargin','px'],
+    ['contentWidth','%']
+  ];
+  ranges.forEach(([id, unit]) => {
+    const el = document.getElementById(id + 'Val');
+    const input = document.getElementById(id);
+    if(el && input) el.textContent = input.value + unit;
+  });
+}
+
+function toggleDebug(){
+  updatePreview();
+}
+
+// PRESETS
+function savePreset(){
+  // Guardar sin imágenes base64 para evitar exceder localStorage
+  const stateToSave = {
+    format: state.format,
+    artists: state.artists,
+    nextId: state.nextId
+    // No guardamos las imágenes base64
+  };
+  
+  const preset = {
+    state: stateToSave,
+    inputs: {
+      bgOpacity: document.getElementById('bgOpacity').value,
+      darkFilter: document.getElementById('darkFilter').checked,
+      watermarkSize: document.getElementById('watermarkSize').value,
+      watermarkOpacity: document.getElementById('watermarkOpacity').value,
+      overlayOpacity: document.getElementById('overlayOpacity').value,
+      grainEffect: document.getElementById('grainEffect').checked,
+      footerLogoSize: document.getElementById('footerLogoSize').value,
+      footerLogoOpacity: document.getElementById('footerLogoOpacity').value,
+      mainLogoSize: document.getElementById('mainLogoSize').value,
+      mainLogoOpacity: document.getElementById('mainLogoOpacity').value,
+      infoDate: document.getElementById('infoDate').value,
+      infoYear: document.getElementById('infoYear').value,
+      infoClub: document.getElementById('infoClub').value,
+      infoCity: document.getElementById('infoCity').value,
+      infoTime: document.getElementById('infoTime').value,
+      headerOpacity: document.getElementById('headerOpacity').value,
+      eventName: document.getElementById('eventName').value,
+      titleSize: document.getElementById('titleSize').value,
+      titleOpacity: document.getElementById('titleOpacity').value,
+      titleTracking: document.getElementById('titleTracking').value,
+      titleAlign: document.getElementById('titleAlign').value,
+      titleMargin: document.getElementById('titleMargin').value,
+      lineupEnabled: document.getElementById('lineupEnabled').checked,
+      globalLineHeight: document.getElementById('globalLineHeight').value,
+      artistSpacing: document.getElementById('artistSpacing').value,
+      globalTracking: document.getElementById('globalTracking').value,
+      lineupOpacity: document.getElementById('lineupOpacity').value,
+      footerWeb: document.getElementById('footerWeb').value,
+      footerAddress: document.getElementById('footerAddress').value,
+      footerAlign: document.getElementById('footerAlign').value,
+      footerLineHeight: document.getElementById('footerLineHeight').value,
+      footerOpacity: document.getElementById('footerOpacity').value,
+      globalMargin: document.getElementById('globalMargin').value,
+      contentWidth: document.getElementById('contentWidth').value,
+      format: state.format
+    }
+  };
+  localStorage.setItem('posterProPreset', JSON.stringify(preset));
+  alert('Preset guardado correctamente');
+}
+
+function loadPreset(){
+  const saved = localStorage.getItem('posterProPreset');
+  if(!saved){
+    alert('No hay preset guardado');
+    return;
+  }
+  const preset = JSON.parse(saved);
+  
+  // Restaurar estado (sin imágenes)
+  state.format = preset.state.format;
+  state.artists = preset.state.artists;
+  state.nextId = preset.state.nextId;
+  // Las imágenes se quedan como null (el usuario debe re-subirlas)
+  state.bgImage = null;
+  state.watermarkImage = null;
+  state.overlayImage = null;
+  state.mainLogoImage = null;
+  state.footerLogoImage = null;
+  
+  renderArtistsList();
+  
+  // Restaurar inputs
+  const inputs = preset.inputs;
+  Object.keys(inputs).forEach(key => {
+    const el = document.getElementById(key);
+    if(el){
+      if(el.type === 'checkbox'){
+        el.checked = inputs[key];
+      } else {
+        el.value = inputs[key];
+      }
+    }
+  });
+  
+  // Restaurar formato
+  setFormat(inputs.format || '9-16');
+  document.querySelectorAll('.format-btn').forEach(b => {
+    b.classList.toggle('active', b.textContent.includes(inputs.format === '4-5' ? '4:5' : inputs.format === 'square' ? '1:1' : '9:16'));
+  });
+  
+  updatePreview();
+  alert('Preset cargado correctamente (las imágenes deben volver a subirse)');
+}
+
+// EXPORT
+async function downloadPoster(){
+  const loading = document.getElementById('loading');
+  loading.classList.add('active');
+  
+  // Esperar a que las fuentes esten cargadas
+  await document.fonts.ready;
+  
+  const poster = document.getElementById('poster');
+  
+  // Configuracion optimizada para alta calidad
+  const canvas = await html2canvas(poster, {
+    scale: 3,
+    useCORS: true,
+    allowTaint: false,
+    backgroundColor: '#000000',
+    logging: false,
+    scrollX: 0,
+    scrollY: 0,
+    windowWidth: poster.offsetWidth,
+    windowHeight: poster.offsetHeight
+  });
+  
+  // Exportar como PNG de alta calidad
+  canvas.toBlob((blob) => {
+    const url = URL.createObjectURL(blob);
+    const link = document.createElement('a');
+    link.download = `poster-${state.format}-${Date.now()}.png`;
+    link.href = url;
+    link.click();
+    URL.revokeObjectURL(url);
+    loading.classList.remove('active');
+  }, 'image/png', 1.0);
+}
+
+// Inicializar lista de artistas
+renderArtistsList();
+</script>
+
+</body>
+</html>
