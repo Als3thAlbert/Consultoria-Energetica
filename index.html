@@ -1,160 +1,1125 @@
 <!DOCTYPE html>
 <html lang="es">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Registro de Visitas</title>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>SFA Pro | Registro de Visitas</title>
 
-<script src="https://html2canvas.hertzen.com/dist/html2canvas.min.js"></script>
-<script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://html2canvas.hertzen.com/dist/html2canvas.min.js"></script>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 
-<style>
-body { font-family: 'Inter', sans-serif; }
-.card-shadow { box-shadow: 0 20px 60px rgba(0,0,0,0.2); }
-</style>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap');
+
+        :root {
+            --brand-primary: #6366f1;
+            --brand-secondary: #a855f7;
+            --accent: #f59e0b;
+        }
+
+        * { 
+            font-family: 'Plus Jakarta Sans', sans-serif; 
+            -webkit-tap-highlight-color: transparent;
+        }
+
+        body {
+            background: radial-gradient(circle at 50% 0%, #1e293b 0%, #0f172a 100%);
+            min-height: 100vh;
+            color: #f8fafc;
+            overflow-x: hidden;
+            -webkit-font-smoothing: antialiased;
+        }
+
+        ::-webkit-scrollbar { width: 4px; }
+        ::-webkit-scrollbar-track { background: transparent; }
+        ::-webkit-scrollbar-thumb { background: rgba(99, 102, 241, 0.3); border-radius: 10px; }
+
+        .glass-card {
+            background: rgba(255, 255, 255, 0.03);
+            backdrop-filter: blur(20px);
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5);
+        }
+
+        .input-premium {
+            background: rgba(15, 23, 42, 0.6) !important;
+            border: 1px solid rgba(255, 255, 255, 0.1) !important;
+            color: white !important;
+            font-size: 16px;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        .input-premium:focus {
+            border-color: var(--brand-primary) !important;
+            box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.15) !important;
+            transform: translateY(-1px);
+            background: rgba(15, 23, 42, 0.8) !important;
+        }
+
+        .input-premium::placeholder { color: rgba(148, 163, 184, 0.5); }
+
+        textarea.input-premium {
+            max-height: 120px;
+            overflow-y: auto;
+        }
+
+        .field-label {
+            font-size: 11px;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.08em;
+            color: #94a3b8;
+            margin-bottom: 6px;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, #6366f1 0%, #8b5cf6 100%);
+            box-shadow: 0 10px 30px -5px rgba(99, 102, 241, 0.4);
+            transition: all 0.3s ease;
+        }
+        .btn-primary:active { transform: scale(0.96); }
+        .btn-primary:hover { 
+            transform: translateY(-2px); 
+            box-shadow: 0 15px 35px -5px rgba(99, 102, 241, 0.5);
+        }
+
+        .btn-whatsapp {
+            background: linear-gradient(135deg, #25d366 0%, #128c7e 100%);
+            box-shadow: 0 10px 30px -5px rgba(37, 211, 102, 0.3);
+            transition: all 0.3s ease;
+        }
+        .btn-whatsapp:active { transform: scale(0.96); }
+        .btn-whatsapp:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 15px 35px -5px rgba(37, 211, 102, 0.4);
+        }
+
+        /* ===== EXPORT CONTAINER 1080x1350 ===== */
+        .export-container {
+            width: 1080px;
+            height: 1350px;
+            background: #ffffff;
+            color: #1e293b;
+            position: absolute;
+            left: -9999px;
+            top: 0;
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+            font-family: 'Plus Jakarta Sans', sans-serif;
+        }
+
+        .export-header {
+            background: linear-gradient(135deg, #6366f1 0%, #8b5cf6 50%, #a855f7 100%);
+            padding: 50px 60px 40px;
+            color: white;
+            position: relative;
+        }
+
+        .export-header::after {
+            content: '';
+            position: absolute;
+            bottom: -30px;
+            left: 0;
+            right: 0;
+            height: 60px;
+            background: white;
+            border-radius: 50% 50% 0 0 / 100% 100% 0 0;
+        }
+
+        .export-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            background: rgba(255,255,255,0.2);
+            backdrop-filter: blur(10px);
+            padding: 8px 20px;
+            border-radius: 100px;
+            font-size: 13px;
+            font-weight: 600;
+            margin-bottom: 20px;
+            border: 1px solid rgba(255,255,255,0.3);
+        }
+
+        .export-title {
+            font-size: 52px;
+            font-weight: 800;
+            margin: 0;
+            line-height: 1.1;
+            letter-spacing: -0.02em;
+        }
+
+        .export-subtitle {
+            font-size: 20px;
+            opacity: 0.9;
+            margin-top: 8px;
+            font-weight: 500;
+        }
+
+        .export-id {
+            position: absolute;
+            top: 40px;
+            right: 60px;
+            font-size: 14px;
+            font-weight: 600;
+            opacity: 0.8;
+            font-family: monospace;
+            background: rgba(0,0,0,0.2);
+            padding: 6px 14px;
+            border-radius: 8px;
+        }
+
+        .export-body {
+            flex: 1;
+            padding: 60px;
+            padding-top: 50px;
+            display: flex;
+            flex-direction: column;
+            gap: 24px;
+        }
+
+        .data-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+        }
+
+        .data-item {
+            background: #f8fafc;
+            border-radius: 16px;
+            padding: 24px;
+            border: 1px solid #f1f5f9;
+            display: flex;
+            align-items: flex-start;
+            gap: 16px;
+        }
+
+        .icon-box {
+            width: 48px;
+            height: 48px;
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 20px;
+            flex-shrink: 0;
+        }
+
+        .icon-box.indigo { background: linear-gradient(135deg, #6366f1, #8b5cf6); color: white; }
+        .icon-box.emerald { background: linear-gradient(135deg, #10b981, #059669); color: white; }
+        .icon-box.amber { background: linear-gradient(135deg, #f59e0b, #d97706); color: white; }
+        .icon-box.rose { background: linear-gradient(135deg, #f43f5e, #e11d48); color: white; }
+        .icon-box.sky { background: linear-gradient(135deg, #0ea5e9, #0284c7); color: white; }
+        .icon-box.violet { background: linear-gradient(135deg, #8b5cf6, #7c3aed); color: white; }
+
+        .data-content {
+            flex: 1;
+            min-width: 0;
+        }
+
+        /* 🎯 MÁS AIRE ENTRE TEXTOS */
+        .data-label {
+            font-size: 12px;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.08em;
+            color: #94a3b8;
+            margin-bottom: 8px; /* Antes 6px */
+        }
+
+        .data-value {
+            font-size: 22px;
+            font-weight: 700;
+            color: #1e293b;
+            line-height: 1.3;
+            display: -webkit-box;
+            -webkit-line-clamp: 3;
+            -webkit-box-orient: vertical;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            margin-bottom: 4px;
+        }
+
+        #exp-direccion {
+            font-size: 18px;
+            -webkit-line-clamp: 4;
+        }
+
+        .obs-section {
+            background: linear-gradient(135deg, #fef3c7 0%, #fde68a 100%);
+            border-radius: 16px;
+            padding: 28px;
+            border-left: 5px solid #f59e0b;
+        }
+
+        /* 🎯 MÁS AIRE EN OBSERVACIONES */
+        .obs-header {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin-bottom: 16px; /* Antes 12px */
+        }
+
+        .obs-title {
+            font-size: 14px;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            color: #92400e;
+        }
+
+        .obs-text {
+            font-size: 18px;
+            line-height: 1.6;
+            font-weight: 500;
+            color: #78350f;
+            display: -webkit-box;
+            -webkit-line-clamp: 5;
+            -webkit-box-orient: vertical;
+            overflow: hidden;
+            margin-top: 4px;
+        }
+
+        .export-footer {
+            background: #f8fafc;
+            padding: 30px 60px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-top: 2px solid #f1f5f9;
+        }
+
+        .footer-brand {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .footer-logo {
+            width: 36px;
+            height: 36px;
+            background: linear-gradient(135deg, #6366f1, #8b5cf6);
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 16px;
+        }
+
+        .footer-text {
+            font-size: 14px;
+            font-weight: 700;
+            color: #1e293b;
+        }
+
+        .footer-date {
+            font-size: 13px;
+            color: #94a3b8;
+            font-weight: 500;
+        }
+
+        .qr-placeholder {
+            width: 60px;
+            height: 60px;
+            background: white;
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border: 2px solid #e2e8f0;
+            font-size: 24px;
+            color: #94a3b8;
+        }
+
+        /* ===== PREVIEW INTERACTIVO ===== */
+        .preview-wrapper {
+            position: relative;
+            width: 100%;
+            max-width: 280px;
+            margin: 0 auto;
+        }
+
+        .preview-miniature {
+            aspect-ratio: 4/5;
+            width: 100%;
+            border: 2px solid rgba(255,255,255,0.1);
+            border-radius: 16px;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.4);
+            overflow: hidden;
+            background: white;
+            min-height: 350px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            position: relative;
+        }
+
+        .preview-miniature img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            cursor: pointer;
+            transition: transform 0.3s ease;
+        }
+
+        .preview-miniature img:hover {
+            transform: scale(1.02);
+        }
+
+        .preview-miniature::after {
+            content: '';
+            position: absolute;
+            inset: 0;
+            background: rgba(0,0,0,0);
+            transition: background 0.3s ease;
+            pointer-events: none;
+        }
+
+        .preview-miniature:hover::after {
+            background: rgba(0,0,0,0.1);
+        }
+
+        .preview-placeholder {
+            text-align: center;
+            color: #94a3b8;
+            padding: 20px;
+        }
+
+        .preview-placeholder i {
+            font-size: 48px;
+            margin-bottom: 12px;
+            opacity: 0.5;
+        }
+
+        .resolution-badge {
+            position: absolute;
+            top: -10px;
+            right: -10px;
+            background: linear-gradient(135deg, #6366f1, #8b5cf6);
+            color: white;
+            padding: 6px 12px;
+            border-radius: 20px;
+            font-size: 10px;
+            font-weight: 700;
+            box-shadow: 0 4px 12px rgba(99, 102, 241, 0.4);
+            z-index: 10;
+        }
+
+        /* ===== ACTION SHEET MODERNO ===== */
+        .action-sheet-overlay {
+            position: fixed;
+            inset: 0;
+            background: rgba(0, 0, 0, 0.6);
+            backdrop-filter: blur(4px);
+            display: none;
+            align-items: flex-end;
+            justify-content: center;
+            z-index: 1000;
+            opacity: 0;
+            transition: opacity 0.3s ease;
+        }
+
+        .action-sheet-overlay.show {
+            display: flex;
+            opacity: 1;
+        }
+
+        .action-sheet {
+            background: white;
+            width: 100%;
+            max-width: 500px;
+            border-radius: 24px 24px 0 0;
+            padding: 20px;
+            transform: translateY(100%);
+            transition: transform 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
+            margin: 0 auto;
+        }
+
+        .action-sheet-overlay.show .action-sheet {
+            transform: translateY(0);
+        }
+
+        .action-sheet-header {
+            text-align: center;
+            padding-bottom: 16px;
+            border-bottom: 1px solid #f1f5f9;
+            margin-bottom: 12px;
+        }
+
+        .action-sheet-title {
+            font-size: 13px;
+            font-weight: 600;
+            color: #94a3b8;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+        }
+
+        .action-sheet-options {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+
+        .action-btn {
+            width: 100%;
+            padding: 16px;
+            border-radius: 12px;
+            border: none;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+            transition: all 0.2s ease;
+        }
+
+        .action-btn:active {
+            transform: scale(0.98);
+        }
+
+        .action-btn-primary {
+            background: #f8fafc;
+            color: #1e293b;
+        }
+
+        .action-btn-primary:hover {
+            background: #f1f5f9;
+        }
+
+        .action-btn-whatsapp {
+            background: #dcfce7;
+            color: #15803d;
+        }
+
+        .action-btn-whatsapp:hover {
+            background: #bbf7d0;
+        }
+
+        .action-btn-cancel {
+            background: transparent;
+            color: #64748b;
+            margin-top: 8px;
+            font-weight: 500;
+        }
+
+        .action-btn-cancel:hover {
+            background: #f8fafc;
+        }
+
+        /* Loading y Toast */
+        .loading-overlay {
+            position: fixed;
+            inset: 0;
+            background: rgba(15, 23, 42, 0.9);
+            backdrop-filter: blur(10px);
+            display: none;
+            align-items: center;
+            justify-content: center;
+            z-index: 1000;
+            flex-direction: column;
+            gap: 20px;
+        }
+
+        .loading-overlay.show { display: flex; }
+
+        .spinner {
+            width: 50px;
+            height: 50px;
+            border: 3px solid rgba(255,255,255,0.1);
+            border-top-color: #6366f1;
+            border-radius: 50%;
+            animation: spin 0.8s linear infinite;
+        }
+
+        @keyframes spin { to { transform: rotate(360deg); } }
+
+        .toast {
+            position: fixed;
+            bottom: 30px;
+            left: 50%;
+            transform: translateX(-50%) translateY(100px);
+            background: #10b981;
+            color: white;
+            padding: 14px 28px;
+            border-radius: 12px;
+            font-weight: 600;
+            font-size: 14px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.3);
+            opacity: 0;
+            transition: all 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
+            z-index: 1001;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .toast.show {
+            transform: translateX(-50%) translateY(0);
+            opacity: 1;
+        }
+
+        @media (max-width: 768px) {
+            .data-grid { grid-template-columns: 1fr; }
+            .export-header { padding: 40px 30px 30px; }
+            .export-body { padding: 40px 30px; }
+            .export-footer { padding: 20px 30px; flex-direction: column; gap: 10px; text-align: center; }
+            .export-title { font-size: 36px; }
+            .action-sheet { max-width: 100%; }
+        }
+    </style>
 </head>
+<body class="p-4 md:p-6">
 
-<body class="bg-gradient-to-br from-slate-900 to-slate-700 min-h-screen flex items-center justify-center p-6">
-
-<div class="w-full max-w-xl">
-
-<h1 class="text-white text-3xl font-bold mb-6 text-center">
-⚡ Registro de Visita
-</h1>
-
-<div class="bg-white rounded-2xl p-6 card-shadow">
-
-<!-- FORM -->
-<div class="space-y-4">
-
-<select id="usuario" class="w-full p-3 rounded-xl bg-slate-100">
-<option value="">Agente</option>
-<option>Jeny</option>
-<option>Ariana</option>
-<option>Luis</option>
-<option>Maria Carolina</option>
-<option>Dahiana</option>
-<option>Test01</option>
-
-</select>
-
-<div class="grid grid-cols-2 gap-3">
-<input type="date" id="fecha" class="p-3 rounded-xl bg-slate-100">
-<input type="time" id="hora" class="p-3 rounded-xl bg-slate-100">
-</div>
-
-<input id="negocio" placeholder="Negocio" class="w-full p-3 rounded-xl bg-slate-100">
-<input id="responsable" placeholder="Responsable" class="w-full p-3 rounded-xl bg-slate-100">
-<input id="direccion" placeholder="Dirección" class="w-full p-3 rounded-xl bg-slate-100">
-<input id="telefono" placeholder="Teléfono" class="w-full p-3 rounded-xl bg-slate-100">
-
-<textarea id="observaciones" placeholder="Observaciones (opcional)" class="w-full p-3 rounded-xl bg-slate-100"></textarea>
-
-<button onclick="guardar()" class="w-full bg-green-500 hover:bg-green-600 text-white p-4 rounded-xl font-bold">
-📸 Guardar Visita
-</button>
-
-</div>
-</div>
-
-<!-- PREVIEW -->
-<div id="previewContainer" class="mt-6 hidden">
-<div id="preview" class="bg-white rounded-2xl p-6 card-shadow"></div>
-</div>
-
-</div>
-
-<script>
-
-const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbzTEAiYVScr1ggP8CeakinesuQ9RzS1uokSV_yXqDlBVMvfVUn_lF_5Mv7ntiwEtb3Ttg/exec";
-
-document.addEventListener("DOMContentLoaded", () => {
-  const now = new Date();
-  document.getElementById("fecha").value = now.toISOString().split('T')[0];
-  document.getElementById("hora").value = now.toTimeString().slice(0,5);
-});
-
-async function guardar() {
-
-  const data = {
-    usuario: val("usuario"),
-    fecha_visita: val("fecha"),
-    hora_visita: val("hora"),
-    nombre_negocio: val("negocio"),
-    responsable: val("responsable"),
-    direccion: val("direccion"),
-    telefono: val("telefono"),
-    observaciones: val("observaciones"),
-    visit_id: Date.now()
-  };
-
-  // VALIDACIÓN SIMPLE
-  for (let k of ["usuario","fecha_visita","hora_visita","nombre_negocio","responsable","direccion","telefono"]) {
-    if (!data[k]) return alert("Faltan campos");
-  }
-
-  // ===== PREVIEW BONITA =====
-  const previewHTML = `
-    <div style="text-align:center;margin-bottom:20px">
-      <h2 style="font-size:20px;font-weight:bold">CONSULTORÍA ENERGÉTICA</h2>
-      <div style="font-size:12px;color:#666">Registro de visita</div>
+    <!-- Loading -->
+    <div class="loading-overlay" id="loadingOverlay">
+        <div class="spinner"></div>
+        <p class="text-white font-semibold">Generando imagen HD...</p>
     </div>
 
-    ${row("Agente", data.usuario)}
-    ${row("Fecha", data.fecha_visita)}
-    ${row("Hora", data.hora_visita)}
-    ${row("Negocio", data.nombre_negocio)}
-    ${row("Responsable", data.responsable)}
-    ${row("Dirección", data.direccion)}
-    ${row("Teléfono", data.telefono)}
-
-    ${data.observaciones ? row("Observaciones", data.observaciones) : ""}
-
-    <div style="margin-top:15px;font-size:11px;color:#999;text-align:center">
-      ID: ${data.visit_id}
+    <!-- Toast -->
+    <div class="toast" id="toast">
+        <i class="fas fa-check-circle"></i>
+        <span id="toastMessage">¡Listo!</span>
     </div>
-  `;
 
-  const preview = document.getElementById("preview");
-  preview.innerHTML = previewHTML;
-
-  document.getElementById("previewContainer").classList.remove("hidden");
-
-  await new Promise(r => setTimeout(r, 200));
-
-  // ===== IMAGEN =====
-  const canvas = await html2canvas(preview, {scale:2});
-  data.imageBase64 = canvas.toDataURL("image/jpeg");
-  data.filename = "visita.jpg";
-
-  // ===== FORM DATA =====
-  const formData = new FormData();
-  for (let key in data) formData.append(key, data[key]);
-
-  // ===== ENVÍO =====
-  await fetch(SCRIPT_URL, {
-    method: "POST",
-    body: formData
-  });
-
-  alert("✅ Guardado");
-
-  document.querySelectorAll("input, textarea").forEach(el => el.value = "");
-}
-
-// HELPERS
-function val(id){ return document.getElementById(id).value.trim(); }
-
-function row(label, value){
-  return `
-    <div style="margin-bottom:10px">
-      <div style="font-size:11px;color:#888">${label}</div>
-      <div style="font-weight:600">${value}</div>
+    <!-- Action Sheet Moderno -->
+    <div class="action-sheet-overlay" id="actionSheet" onclick="cerrarActionSheet(event)">
+        <div class="action-sheet" onclick="event.stopPropagation()">
+            <div class="action-sheet-header">
+                <div class="action-sheet-title">¿Qué quieres hacer?</div>
+            </div>
+            <div class="action-sheet-options">
+                <button class="action-btn action-btn-primary" onclick="descargarDesdePreview()">
+                    <i class="fas fa-download text-indigo-500"></i>
+                    Descargar imagen
+                </button>
+                <button class="action-btn action-btn-whatsapp" onclick="compartirWhatsAppDesdePreview()">
+                    <i class="fab fa-whatsapp text-green-600"></i>
+                    Enviar por WhatsApp
+                </button>
+                <button class="action-btn action-btn-cancel" onclick="cerrarActionSheet()">
+                    Cancelar
+                </button>
+            </div>
+        </div>
     </div>
-  `;
-}
 
-</script>
+    <div class="max-w-6xl mx-auto grid grid-cols-1 lg:grid-cols-5 gap-6 items-start">
+        
+        <!-- FORMULARIO -->
+        <div class="lg:col-span-3 glass-card rounded-3xl p-5 md:p-8">
+            <header class="mb-6">
+                <div class="flex items-center gap-3 mb-3">
+                    <div class="w-12 h-12 rounded-2xl bg-gradient-to-br from-indigo-500 to-purple-600 flex items-center justify-center shadow-lg shadow-indigo-500/30">
+                        <i class="fas fa-file-signature text-white text-lg"></i>
+                    </div>
+                    <div>
+                        <h1 class="text-xl md:text-2xl font-bold">Nueva Visita</h1>
+                        <p class="text-slate-400 text-xs">Registro profesional de gestión de campo</p>
+                    </div>
+                </div>
+            </header>
 
+            <form id="visitaForm" class="space-y-4" onsubmit="return false;">
+                <!-- Agente + Fecha/Hora -->
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <div>
+                        <label class="field-label">
+                            <i class="fas fa-user-tie text-indigo-400"></i>
+                            Agente
+                        </label>
+                        <select id="usuario" class="input-premium w-full rounded-xl px-4 py-3 outline-none appearance-none" required>
+                            <option value="" class="bg-slate-800">Seleccionar agente...</option>
+                            <option value="Jeny" class="bg-slate-800">Jeny</option>
+                            <option value="Ariana" class="bg-slate-800">Ariana</option>
+                            <option value="Luis" class="bg-slate-800">Luis</option>
+                            <option value="Maria Carolina" class="bg-slate-800">Maria Carolina</option>
+                            <option value="Dahiana" class="bg-slate-800">Dahiana</option>
+                            <option value="Test01" class="bg-slate-800">Test01</option>
+                        </select>
+                    </div>
+                    <div class="grid grid-cols-2 gap-3">
+                        <div>
+                            <label class="field-label">
+                                <i class="fas fa-calendar text-emerald-400"></i>
+                                Fecha
+                            </label>
+                            <input type="date" id="fecha" class="input-premium w-full rounded-xl px-3 py-3 outline-none" required>
+                        </div>
+                        <div>
+                            <label class="field-label">
+                                <i class="fas fa-clock text-amber-400"></i>
+                                Hora
+                            </label>
+                            <input type="time" id="hora" class="input-premium w-full rounded-xl px-3 py-3 outline-none" required>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Negocio -->
+                <div>
+                    <label class="field-label">
+                        <i class="fas fa-store text-violet-400"></i>
+                        Nombre del Negocio
+                    </label>
+                    <input type="text" id="negocio" class="input-premium w-full rounded-xl px-4 py-3 outline-none" placeholder="Ej: Ferretería El Progreso" required>
+                </div>
+
+                <!-- Dirección -->
+                <div>
+                    <label class="field-label">
+                        <i class="fas fa-map-marker-alt text-rose-400"></i>
+                        Dirección Completa
+                    </label>
+                    <input type="text" id="direccion" class="input-premium w-full rounded-xl px-4 py-3 outline-none" placeholder="Calle, número, colonia, ciudad" required>
+                </div>
+
+                <!-- Responsable + Teléfono -->
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <div>
+                        <label class="field-label">
+                            <i class="fas fa-id-badge text-sky-400"></i>
+                            Responsable
+                        </label>
+                        <input type="text" id="responsable" class="input-premium w-full rounded-xl px-4 py-3 outline-none" placeholder="Nombre completo" required>
+                    </div>
+                    <div>
+                        <label class="field-label">
+                            <i class="fas fa-phone text-indigo-400"></i>
+                            Teléfono
+                        </label>
+                        <input type="tel" id="telefono" class="input-premium w-full rounded-xl px-4 py-3 outline-none" placeholder="(55) 1234-5678" required>
+                    </div>
+                </div>
+
+                <!-- Observaciones -->
+                <div>
+                    <label class="field-label">
+                        <i class="fas fa-comment text-amber-400"></i>
+                        Observaciones
+                    </label>
+                    <textarea id="observaciones" rows="3" class="input-premium w-full rounded-xl px-4 py-3 outline-none resize-none" placeholder="Detalles importantes de la visita..."></textarea>
+                </div>
+
+                <!-- BOTONES SIMPLIFICADOS -->
+                <div class="pt-4 space-y-3">
+                    <button type="button" onclick="generarPreviewFinal()" 
+                        class="btn-primary w-full font-bold py-4 rounded-2xl flex items-center justify-center gap-3 text-base">
+                        <i class="fas fa-bolt text-xl"></i>
+                        GENERAR VISITA
+                    </button>
+
+                    <button type="button" onclick="compartirWhatsApp()" 
+                        class="btn-whatsapp w-full font-bold py-4 rounded-2xl flex items-center justify-center gap-3 text-base">
+                        <i class="fab fa-whatsapp text-2xl"></i>
+                        ENVIAR POR WHATSAPP
+                    </button>
+                </div>
+            </form>
+        </div>
+
+        <!-- PREVIEW -->
+        <div class="lg:col-span-2 flex flex-col items-center justify-start space-y-4 sticky top-6">
+            <div class="flex items-center gap-2 mb-2">
+                <span class="text-xs font-bold text-slate-400 uppercase tracking-widest">Vista Previa</span>
+                <span class="text-[10px] bg-indigo-500/20 text-indigo-300 px-2 py-1 rounded-full font-mono">1080×1350</span>
+            </div>
+            
+            <div class="preview-wrapper">
+                <div class="resolution-badge">4:5 HD</div>
+                <div class="preview-miniature" id="visualPreview">
+                    <div class="preview-placeholder">
+                        <i class="fas fa-image"></i>
+                        <p class="text-sm">Completa el formulario y presiona<br><strong>"Generar Visita"</strong></p>
+                    </div>
+                </div>
+            </div>
+
+            <p class="text-xs text-slate-500 text-center max-w-[250px] leading-relaxed">
+                Toca la imagen generada para descargar o compartir directamente.
+            </p>
+        </div>
+    </div>
+
+    <!-- ÁREA DE CAPTURA (OCULTA) -->
+    <div id="captureArea" class="export-container">
+        <div class="export-header">
+            <div class="export-id" id="exp-id">ID: #0000</div>
+            <div class="export-badge">
+                <i class="fas fa-check-circle"></i>
+                REGISTRO COMPLETADO
+            </div>
+            <h1 class="export-title">VISITA<br>TÉCNICA</h1>
+            <p class="export-subtitle" id="exp-fecha-header">Consultoría Energética</p>
+        </div>
+
+        <div class="export-body">
+            <div class="data-grid">
+                <div class="data-item">
+                    <div class="icon-box indigo"><i class="fas fa-user-tie"></i></div>
+                    <div class="data-content">
+                        <div class="data-label">Agente Comercial</div>
+                        <div class="data-value" id="exp-agente">---</div>
+                    </div>
+                </div>
+
+                <div class="data-item">
+                    <div class="icon-box emerald"><i class="fas fa-calendar-check"></i></div>
+                    <div class="data-content">
+                        <div class="data-label">Fecha y Hora</div>
+                        <div class="data-value" id="exp-fecha">---</div>
+                    </div>
+                </div>
+
+                <div class="data-item">
+                    <div class="icon-box violet"><i class="fas fa-store"></i></div>
+                    <div class="data-content">
+                        <div class="data-label">Establecimiento</div>
+                        <div class="data-value" id="exp-negocio">---</div>
+                    </div>
+                </div>
+
+                <div class="data-item">
+                    <div class="icon-box rose"><i class="fas fa-map-marker-alt"></i></div>
+                    <div class="data-content">
+                        <div class="data-label">Ubicación</div>
+                        <div class="data-value" id="exp-direccion">---</div>
+                    </div>
+                </div>
+
+                <div class="data-item">
+                    <div class="icon-box sky"><i class="fas fa-id-badge"></i></div>
+                    <div class="data-content">
+                        <div class="data-label">Responsable</div>
+                        <div class="data-value" id="exp-responsable">---</div>
+                    </div>
+                </div>
+
+                <div class="data-item">
+                    <div class="icon-box indigo"><i class="fas fa-phone-alt"></i></div>
+                    <div class="data-content">
+                        <div class="data-label">Contacto</div>
+                        <div class="data-value" id="exp-telefono">---</div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="obs-section" id="exp-obs-section" style="display: none;">
+                <div class="obs-header">
+                    <i class="fas fa-comment-dots text-amber-600 text-lg"></i>
+                    <span class="obs-title">Observaciones Importantes</span>
+                </div>
+                <div class="obs-text" id="exp-obs">---</div>
+            </div>
+        </div>
+
+        <div class="export-footer">
+            <div class="footer-brand">
+                <div class="footer-logo">⚡</div>
+                <div>
+                    <div class="footer-text">CONSULTORÍA ENERGÉTICA</div>
+                    <div class="footer-date" id="exp-footer-date">SFA Pro • 2026</div>
+                </div>
+            </div>
+            <div class="qr-placeholder">
+                <i class="fas fa-qrcode"></i>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbzTEAiYVScr1ggP8CeakinesuQ9RzS1uokSV_yXqDlBVMvfVUn_lF_5Mv7ntiwEtb3Ttg/exec";
+        let ultimaImagen = null;
+
+        // Inicializar fecha y hora
+        document.addEventListener("DOMContentLoaded", () => {
+            const now = new Date();
+            document.getElementById("fecha").value = now.toISOString().split('T')[0];
+            document.getElementById("hora").value = now.toTimeString().slice(0,5);
+        });
+
+        // Ajuste dinámico de tamaño de texto
+        function ajustarTexto(id, max, smallSize = "18px") {
+            const el = document.getElementById(id);
+            if (!el) return;
+            if (el.textContent.length > max) {
+                el.style.fontSize = smallSize;
+            } else {
+                el.style.fontSize = "";
+            }
+        }
+
+        // Sincronización (sin render preview)
+        function syncData() {
+            const usuario = document.getElementById('usuario').value;
+            const fecha = document.getElementById('fecha').value;
+            const hora = document.getElementById('hora').value;
+            const negocio = document.getElementById('negocio').value;
+            const direccion = document.getElementById('direccion').value;
+            const responsable = document.getElementById('responsable').value;
+            const telefono = document.getElementById('telefono').value;
+            const observaciones = document.getElementById('observaciones').value;
+
+            document.getElementById('exp-agente').textContent = usuario || '---';
+            document.getElementById('exp-negocio').textContent = negocio || '---';
+            document.getElementById('exp-direccion').textContent = direccion || '---';
+            document.getElementById('exp-responsable').textContent = responsable || '---';
+            document.getElementById('exp-telefono').textContent = telefono || '---';
+            
+            if (fecha && hora) {
+                const dateObj = new Date(fecha + 'T' + hora);
+                const options = { day: '2-digit', month: 'long', year: 'numeric', hour: '2-digit', minute: '2-digit' };
+                document.getElementById('exp-fecha').textContent = dateObj.toLocaleString('es-ES', options);
+                document.getElementById('exp-fecha-header').textContent = dateObj.toLocaleDateString('es-ES', { weekday: 'long', day: 'numeric', month: 'long' });
+            } else {
+                document.getElementById('exp-fecha').textContent = '---';
+                document.getElementById('exp-fecha-header').textContent = 'Consultoría Energética';
+            }
+
+            const obsSection = document.getElementById('exp-obs-section');
+            if (observaciones.trim()) {
+                obsSection.style.display = 'block';
+                document.getElementById('exp-obs').textContent = observaciones;
+            } else {
+                obsSection.style.display = 'none';
+            }
+
+            document.getElementById('exp-id').textContent = 'ID: #' + Math.floor(1000 + Math.random() * 9000);
+            const now = new Date();
+            document.getElementById('exp-footer-date').textContent = 'SFA Pro • ' + now.getFullYear();
+
+            ajustarTexto('exp-negocio', 40);
+            ajustarTexto('exp-responsable', 30);
+            ajustarTexto('exp-direccion', 60, "16px");
+            ajustarTexto('exp-obs', 120, "16px");
+        }
+
+        const inputs = ['usuario', 'fecha', 'hora', 'negocio', 'direccion', 'responsable', 'telefono', 'observaciones'];
+        inputs.forEach(id => {
+            document.getElementById(id).addEventListener('input', syncData);
+        });
+
+        async function generarImagenHD() {
+            const captureArea = document.getElementById('captureArea');
+            showLoading(true);
+            
+            try {
+                const canvas = await html2canvas(captureArea, {
+                    scale: 1,
+                    useCORS: true,
+                    backgroundColor: "#ffffff",
+                    logging: false,
+                    width: 1080,
+                    height: 1350
+                });
+                
+                showLoading(false);
+                return canvas;
+            } catch (err) {
+                showLoading(false);
+                console.error('Error:', err);
+                showToast('Error al generar imagen', 'error');
+                return null;
+            }
+        }
+
+        async function generarPreviewFinal() {
+            if (!validarFormulario()) return;
+
+            const canvas = await generarImagenHD();
+            if (!canvas) return;
+
+            ultimaImagen = canvas;
+
+            const img = document.createElement('img');
+            img.src = canvas.toDataURL('image/jpeg', 0.9);
+            img.onclick = abrirActionSheet;
+
+            const preview = document.getElementById('visualPreview');
+            preview.innerHTML = '';
+            preview.appendChild(img);
+
+            showToast('Vista generada');
+            guardarEnSheets(canvas);
+        }
+
+        async function guardarEnSheets(canvas) {
+            const data = {
+                usuario: document.getElementById('usuario').value,
+                fecha_visita: document.getElementById('fecha').value,
+                hora_visita: document.getElementById('hora').value,
+                nombre_negocio: document.getElementById('negocio').value,
+                responsable: document.getElementById('responsable').value,
+                direccion: document.getElementById('direccion').value,
+                telefono: document.getElementById('telefono').value,
+                observaciones: document.getElementById('observaciones').value,
+                visit_id: Date.now(),
+                imageBase64: canvas.toDataURL("image/jpeg", 0.9),
+                filename: `Visita_${Date.now()}.jpg`
+            };
+
+            const formData = new FormData();
+            for (let key in data) formData.append(key, data[key]);
+
+            try {
+                await fetch(SCRIPT_URL, { method: "POST", body: formData });
+                console.log('Guardado en Sheets');
+            } catch (error) {
+                console.error('Error Sheets:', error);
+            }
+        }
+
+        // ===== ACTION SHEET MODERNO =====
+        function abrirActionSheet() {
+            if (!ultimaImagen) return;
+            document.getElementById('actionSheet').classList.add('show');
+        }
+
+        function cerrarActionSheet(event) {
+            if (event && event.target !== event.currentTarget) return;
+            document.getElementById('actionSheet').classList.remove('show');
+        }
+
+        function descargarDesdePreview() {
+            if (!ultimaImagen) return;
+            
+            const link = document.createElement('a');
+            link.download = `Visita_${Date.now()}.jpg`;
+            link.href = ultimaImagen.toDataURL('image/jpeg', 0.95);
+            link.click();
+
+            cerrarActionSheet();
+            showToast('Imagen descargada');
+        }
+
+        async function compartirWhatsAppDesdePreview() {
+            if (!ultimaImagen) return;
+            
+            ultimaImagen.toBlob(async (blob) => {
+                const file = new File([blob], "visita.jpg", { type: "image/jpeg" });
+
+                if (navigator.canShare && navigator.canShare({ files: [file] })) {
+                    try {
+                        await navigator.share({
+                            files: [file],
+                            title: 'Registro de Visita',
+                        });
+                        showToast('¡Compartido!');
+                    } catch (err) {
+                        if (err.name !== 'AbortError') fallbackWhatsApp();
+                    }
+                } else {
+                    fallbackWhatsApp();
+                }
+            });
+            
+            cerrarActionSheet();
+        }
+
+        async function compartirWhatsApp() {
+            if (!validarFormulario()) return;
+            
+            const canvas = await generarImagenHD();
+            if (!canvas) return;
+
+            canvas.toBlob(async (blob) => {
+                const file = new File([blob], "visita_" + Date.now() + ".jpg", { type: "image/jpeg" });
+                
+                if (navigator.canShare && navigator.canShare({ files: [file] })) {
+                    try {
+                        await navigator.share({
+                            files: [file],
+                            title: 'Registro de Visita',
+                            text: `Visita: ${document.getElementById('negocio').value}`
+                        });
+                        showToast('¡Listo para compartir!');
+                    } catch (err) {
+                        if (err.name !== 'AbortError') fallbackWhatsApp();
+                    }
+                } else {
+                    fallbackWhatsApp();
+                }
+            }, 'image/jpeg', 0.95);
+        }
+
+        function fallbackWhatsApp() {
+            const data = {
+                usuario: document.getElementById('usuario').value,
+                negocio: document.getElementById('negocio').value,
+                responsable: document.getElementById('responsable').value,
+                direccion: document.getElementById('direccion').value,
+                telefono: document.getElementById('telefono').value,
+                fecha: document.getElementById('fecha').value,
+                hora: document.getElementById('hora').value,
+            };
+            
+            const mensaje = encodeURIComponent(
+                `*REGISTRO DE VISITA* ⚡\n\n` +
+                `*Agente:* ${data.usuario}\n` +
+                `*Fecha:* ${data.fecha}\n` +
+                `*Hora:* ${data.hora}\n\n` +
+                `*Negocio:* ${data.negocio}\n` +
+                `*Responsable:* ${data.responsable}\n` +
+                `*Dirección:* ${data.direccion}\n` +
+                `*Teléfono:* ${data.telefono}`
+            );
+            
+            window.open(`https://wa.me/?text=${mensaje}`, '_blank');
+            showToast('Abriendo WhatsApp...');
+        }
+
+        function validarFormulario() {
+            const campos = ['usuario', 'fecha', 'hora', 'negocio', 'direccion', 'responsable', 'telefono'];
+            let valido = true;
+            
+            campos.forEach(id => {
+                const campo = document.getElementById(id);
+                if (!campo.value.trim()) {
+                    campo.style.borderColor = '#ef4444';
+                    valido = false;
+                } else {
+                    campo.style.borderColor = '';
+                }
+            });
+            
+            if (!valido) {
+                showToast('Completa todos los campos', 'error');
+                const primero = campos.find(id => !document.getElementById(id).value.trim());
+                if (primero) document.getElementById(primero).scrollIntoView({ behavior: 'smooth', block: 'center' });
+            }
+            
+            return valido;
+        }
+
+        function showLoading(show) {
+            document.getElementById('loadingOverlay').classList.toggle('show', show);
+        }
+
+        function showToast(mensaje, tipo = 'success') {
+            const toast = document.getElementById('toast');
+            const toastMessage = document.getElementById('toastMessage');
+            
+            toastMessage.textContent = mensaje;
+            toast.style.background = tipo === 'error' ? '#ef4444' : '#10b981';
+            toast.classList.add('show');
+            
+            setTimeout(() => {
+                toast.classList.remove('show');
+            }, 2500);
+        }
+
+        inputs.forEach(id => {
+            document.getElementById(id).addEventListener('input', function() {
+                this.style.borderColor = '';
+            });
+        });
+    </script>
 </body>
 </html>
