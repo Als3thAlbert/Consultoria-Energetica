@@ -643,7 +643,7 @@
                             <option value="Maria Carolina" class="bg-slate-800">Maria Carolina</option>
                         
                             <option value="Test01" class="bg-slate-800">Test01</option>
-                            <option value="Test02" class="bg-slate-800">Test01</option>
+                            <option value="Test02" class="bg-slate-800">Test02</option>
                         </select>
                     </div>
                     <div class="grid grid-cols-2 gap-3">
@@ -952,19 +952,16 @@
         }
 
         async function guardarEnSheets(canvas) {
-            const data = {
-                usuario: document.getElementById('usuario').value,
-                fecha_visita: document.getElementById('fecha').value,
-                hora_visita: document.getElementById('hora').value,
-                nombre_negocio: document.getElementById('negocio').value,
-                responsable: document.getElementById('responsable').value,
-                direccion: document.getElementById('direccion').value,
-                telefono: document.getElementById('telefono').value,
-                observaciones: document.getElementById('observaciones').value,
-                visit_id: Date.now(),
-                imageBase64: canvas.toDataURL("image/jpeg", 0.9),
-                filename: `Visita_${Date.now()}.jpg`
-            };
+           const data = {
+    usuario: document.getElementById('usuario').value,
+    fecha_visita: document.getElementById('fecha').value,
+    hora_visita: document.getElementById('hora').value,
+    responsable: document.getElementById('responsable').value,
+    negocio: document.getElementById('negocio').value,
+    direccion: document.getElementById('direccion').value,
+    telefono: document.getElementById('telefono').value,
+    OBSERVACIONES: document.getElementById('observaciones').value
+};
 
             const formData = new FormData();
             for (let key in data) formData.append(key, data[key]);
