@@ -4,7 +4,7 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Poster PRO+ — Editor de Carteles Clubbing</title>
-<link href="https://fonts.googleapis.com/css2?family=Anton&family=Montserrat:wght@300;400;700;900&family=Bebas+Neue&family=Oswald:wght@300;400;700&family=Playfair+Display:wght@400;700;900&family=Poppins:wght@300;400;700;900&family=Raleway:wght@300;400;700;900&family=Inter:wght@300;400;700;900&family=Roboto+Condensed:wght@300;400;700&family=DM+Sans:wght@300;400;700&family=Space+Grotesk:wght@300;400;700&family=Syne:wght@400;700;800&family=Clash+Display:wght@400;700&family=Archivo+Black&family=Chakra+Petch:wght@300;400;700&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Anton&family=Montserrat:wght@300;400;700;900&family=Bebas+Neue&family=Oswald:wght@300;400;700&family=Playfair+Display:wght@400;700;900&family=Poppins:wght@300;400;700;900&family=Raleway:wght@300;400;700;900&family=Inter:wght@300;400;700;900&family=Roboto+Condensed:wght@300;400;700&family=DM+Sans:wght@300;400;700&family=Space+Grotesk:wght@300;400;700&family=Syne:wght@400;700;800&family=Archivo+Black&family=Chakra+Petch:wght@300;400;700&display=swap" rel="stylesheet">
 <script src="https://cdn.jsdelivr.net/npm/html2canvas@1.4.1/dist/html2canvas.min.js"></script>
 <style>
 *{box-sizing:border-box;margin:0;padding:0}
@@ -100,7 +100,7 @@ label{
   margin-bottom:4px;
   display:block;
 }
-input[type="text"],input[type="number"],input[type="url"],select{
+input[type="text"],input[type="number"],input[type="url"],select,textarea{
   width:100%;
   padding:10px 12px;
   background:#000;
@@ -111,7 +111,7 @@ input[type="text"],input[type="number"],input[type="url"],select{
   border-radius:4px;
   transition:border-color 0.2s;
 }
-input:focus,select:focus{
+input:focus,select:focus,textarea:focus{
   outline:none;
   border-color:var(--accent);
 }
@@ -399,6 +399,40 @@ input[type="range"]::-moz-range-thumb{
   pointer-events:none;
 }
 
+/* WATERMARK TOP-LEFT */
+.watermark-topleft{
+  position:absolute;
+  top:20px;
+  left:20px;
+  z-index:15;
+  pointer-events:none;
+}
+.watermark-topleft img{
+  opacity:var(--watermark-opacity, 0.3);
+  filter:brightness(1.2);
+}
+.watermark-topleft.size-s img{width:60px}
+.watermark-topleft.size-m img{width:100px}
+.watermark-topleft.size-l img{width:150px}
+
+/* CUSTOM OVERLAY */
+.custom-overlay{
+  position:absolute;
+  top:0;
+  left:0;
+  width:100%;
+  height:100%;
+  z-index:12;
+  pointer-events:none;
+  opacity:var(--overlay-opacity, 0.5);
+  mix-blend-mode:var(--overlay-blend, normal);
+}
+.custom-overlay img{
+  width:100%;
+  height:100%;
+  object-fit:cover;
+}
+
 /* ELEMENTOS DEL POSTER */
 .poster-header{
   text-align:center;
@@ -551,6 +585,70 @@ input[type="range"]::-moz-range-thumb{
   background:linear-gradient(to bottom, rgba(0,0,0,0.3) 0%, transparent 30%, transparent 70%, rgba(0,0,0,0.5) 100%);
 }
 
+/* GLITCH EFFECT */
+.glitch-wrapper{
+  position:relative;
+  display:inline-block;
+}
+.glitch-wrapper .glitch-main{
+  position:relative;
+  z-index:2;
+}
+.glitch-wrapper .glitch-clone{
+  position:absolute;
+  top:0;
+  left:0;
+  width:100%;
+  height:100%;
+  opacity:0.8;
+}
+.glitch-wrapper .glitch-clone.c1{
+  color:#0ff;
+  z-index:1;
+  clip-path:inset(0 0 70% 0);
+  transform:translateX(-2px);
+  animation:glitch-anim-1 2s infinite linear alternate-reverse;
+}
+.glitch-wrapper .glitch-clone.c2{
+  color:#f0f;
+  z-index:1;
+  clip-path:inset(30% 0 40% 0);
+  transform:translateX(2px);
+  animation:glitch-anim-2 3s infinite linear alternate-reverse;
+}
+.glitch-wrapper .glitch-clone.c3{
+  color:#ff0;
+  z-index:1;
+  clip-path:inset(60% 0 10% 0);
+  transform:translateX(-1px);
+  animation:glitch-anim-3 2.5s infinite linear alternate-reverse;
+}
+
+@keyframes glitch-anim-1{
+  0%{clip-path:inset(20% 0 60% 0);transform:translate(-2px,0)}
+  20%{clip-path:inset(60% 0 10% 0);transform:translate(2px,0)}
+  40%{clip-path:inset(40% 0 40% 0);transform:translate(-2px,0)}
+  60%{clip-path:inset(80% 0 5% 0);transform:translate(2px,0)}
+  80%{clip-path:inset(10% 0 70% 0);transform:translate(-1px,0)}
+  100%{clip-path:inset(30% 0 50% 0);transform:translate(1px,0)}
+}
+@keyframes glitch-anim-2{
+  0%{clip-path:inset(10% 0 80% 0);transform:translate(2px,0)}
+  20%{clip-path:inset(30% 0 50% 0);transform:translate(-2px,0)}
+  40%{clip-path:inset(70% 0 20% 0);transform:translate(2px,0)}
+  60%{clip-path:inset(50% 0 40% 0);transform:translate(-2px,0)}
+  80%{clip-path:inset(20% 0 60% 0);transform:translate(1px,0)}
+  100%{clip-path:inset(60% 0 30% 0);transform:translate(-1px,0)}
+}
+@keyframes glitch-anim-3{
+  0%{clip-path:inset(50% 0 30% 0);transform:translate(-1px,0)}
+  20%{clip-path:inset(20% 0 60% 0);transform:translate(1px,0)}
+  40%{clip-path:inset(80% 0 10% 0);transform:translate(-2px,0)}
+  60%{clip-path:inset(40% 0 40% 0);transform:translate(2px,0)}
+  80%{clip-path:inset(10% 0 70% 0);transform:translate(-1px,0)}
+  100%{clip-path:inset(60% 0 20% 0);transform:translate(1px,0)}
+}
+
 /* FONT FAMILY CLASSES */
 .font-anton{font-family:'Anton',sans-serif}
 .font-bebas{font-family:'Bebas Neue',sans-serif}
@@ -563,7 +661,6 @@ input[type="range"]::-moz-range-thumb{
 .font-dm-sans{font-family:'DM Sans',sans-serif}
 .font-space-grotesk{font-family:'Space Grotesk',sans-serif}
 .font-syne{font-family:'Syne',sans-serif}
-.font-clash{font-family:'Clash Display',sans-serif}
 .font-archivo{font-family:'Archivo Black',sans-serif}
 .font-chakra{font-family:'Chakra Petch',sans-serif}
 .font-montserrat{font-family:'Montserrat',sans-serif}
@@ -602,6 +699,73 @@ input[type="range"]::-moz-range-thumb{
       </div>
     </div>
 
+    <!-- MARCA DE AGUA -->
+    <div class="section">
+      <div class="section-header" onclick="toggleSection(this)">Marca de Agua</div>
+      <div class="section-content">
+        <div class="toggle-btn">
+          <input type="checkbox" id="showWatermark" onchange="toggleWatermark(this.checked)">
+          <span>Mostrar marca de agua</span>
+        </div>
+        <label>Imagen (URL o local)</label>
+        <div class="file-input-wrapper">
+          <input type="file" id="watermarkFile" accept="image/*" onchange="loadWatermarkFile(this)">
+          <label for="watermarkFile" class="file-btn">📁 Subir marca de agua</label>
+        </div>
+        <input type="url" id="watermarkUrl" placeholder="O URL..." oninput="updateWatermarkUrl(this.value)" style="margin-top:8px">
+        
+        <label>Tamaño</label>
+        <div class="row-3">
+          <button class="format-btn" onclick="setWatermarkSize('size-s')">S</button>
+          <button class="format-btn active" onclick="setWatermarkSize('size-m')">M</button>
+          <button class="format-btn" onclick="setWatermarkSize('size-l')">L</button>
+        </div>
+        
+        <label>Opacidad <span class="range-value" id="watermarkOpacityVal">30%</span></label>
+        <input type="range" id="watermarkOpacity" min="0" max="100" value="30" oninput="updateWatermarkOpacity(this.value)">
+        
+        <label>Posición X <span class="range-value" id="watermarkXVal">20px</span></label>
+        <input type="range" id="watermarkX" min="0" max="200" value="20" oninput="updateWatermarkPos(this.value, null)">
+        
+        <label>Posición Y <span class="range-value" id="watermarkYVal">20px</span></label>
+        <input type="range" id="watermarkY" min="0" max="200" value="20" oninput="updateWatermarkPos(null, this.value)">
+      </div>
+    </div>
+
+    <!-- OVERLAY PERSONALIZADO -->
+    <div class="section">
+      <div class="section-header" onclick="toggleSection(this)">Overlay Personalizado</div>
+      <div class="section-content">
+        <div class="toggle-btn">
+          <input type="checkbox" id="showCustomOverlay" onchange="toggleCustomOverlay(this.checked)">
+          <span>Mostrar overlay</span>
+        </div>
+        <label>Imagen overlay (textura/patrón)</label>
+        <div class="file-input-wrapper">
+          <input type="file" id="overlayFile" accept="image/*" onchange="loadOverlayFile(this)">
+          <label for="overlayFile" class="file-btn">📁 Subir overlay</label>
+        </div>
+        <input type="url" id="overlayUrl" placeholder="O URL..." oninput="updateOverlayUrl(this.value)" style="margin-top:8px">
+        
+        <label>Opacidad <span class="range-value" id="overlayOpacityVal">50%</span></label>
+        <input type="range" id="overlayOpacity" min="0" max="100" value="50" oninput="updateOverlayOpacity(this.value)">
+        
+        <label>Modo de fusión</label>
+        <select id="overlayBlend" onchange="updateOverlayBlend(this.value)">
+          <option value="normal">Normal</option>
+          <option value="multiply">Multiply</option>
+          <option value="screen">Screen</option>
+          <option value="overlay">Overlay</option>
+          <option value="soft-light">Soft Light</option>
+          <option value="hard-light">Hard Light</option>
+          <option value="color-dodge">Color Dodge</option>
+          <option value="difference">Difference</option>
+          <option value="exclusion">Exclusion</option>
+          <option value="luminosity">Luminosity</option>
+        </select>
+      </div>
+    </div>
+
     <!-- TIPOGRAFÍA GLOBAL -->
     <div class="section">
       <div class="section-header" onclick="toggleSection(this)">Tipografía Premium</div>
@@ -619,7 +783,6 @@ input[type="range"]::-moz-range-thumb{
           <option value="font-dm-sans">DM Sans (Friendly)</option>
           <option value="font-space-grotesk">Space Grotesk (Unique)</option>
           <option value="font-syne">Syne (Avant-Garde)</option>
-          <option value="font-clash">Clash Display (Editorial)</option>
           <option value="font-archivo">Archivo Black (Heavy)</option>
           <option value="font-chakra">Chakra Petch (Cyber)</option>
           <option value="font-montserrat">Montserrat (Classic)</option>
@@ -669,7 +832,7 @@ input[type="range"]::-moz-range-thumb{
         <label>Logo URL</label>
         <input type="url" id="logoUrl" placeholder="https://..." oninput="updateLogo(this.value)">
         <label>Nombre del Club</label>
-        <input type="text" id="clubName" value="CLUB NAME" oninput="updateClubName(this.value)">
+        <input type="text" id="clubName" value="DETROIT" oninput="updateClubName(this.value)">
         <label>Tamaño Club <span class="range-value" id="clubSizeVal">48px</span></label>
         <input type="range" id="clubSize" min="24" max="120" value="48" oninput="updateClubSize(this.value)">
         <div class="row">
@@ -691,7 +854,7 @@ input[type="range"]::-moz-range-thumb{
     <div class="section">
       <div class="section-header" onclick="toggleSection(this)">Título del Evento</div>
       <div class="section-content">
-        <input type="text" id="eventTitle" value="BLACKOUT" oninput="updateEventTitle(this.value)">
+        <input type="text" id="eventTitle" value="AARON BLEEK" oninput="updateEventTitle(this.value)">
         <label>Tamaño <span class="range-value" id="titleSizeVal">48px</span></label>
         <input type="range" id="titleSize" min="24" max="200" value="48" oninput="updateTitleSize(this.value)">
         <label>Tracking <span class="range-value" id="titleTrackingVal">4px</span></label>
@@ -702,6 +865,11 @@ input[type="range"]::-moz-range-thumb{
           <option value="left">Izquierda</option>
           <option value="right">Derecha</option>
         </select>
+        
+        <div class="toggle-btn" style="margin-top:10px">
+          <input type="checkbox" id="glitchTitle" onchange="toggleGlitch('title', this.checked)">
+          <span>Efecto Glitch en Título</span>
+        </div>
       </div>
     </div>
 
@@ -717,6 +885,11 @@ input[type="range"]::-moz-range-thumb{
         <input type="range" id="artistSpacing" min="0" max="60" value="20" oninput="updateArtistSpacing(this.value)">
         <label>Interlineado <span class="range-value" id="lineHeightVal">1.1</span></label>
         <input type="range" id="lineHeight" min="0.8" max="2.0" step="0.1" value="1.1" oninput="updateLineHeight(this.value)">
+        
+        <div class="toggle-btn" style="margin-bottom:10px">
+          <input type="checkbox" id="glitchArtists" onchange="toggleGlitch('artists', this.checked)">
+          <span>Efecto Glitch en Artistas</span>
+        </div>
         
         <div id="artistsList"></div>
         <button class="add-btn" onclick="addArtist()">+ Añadir Artista</button>
@@ -734,10 +907,15 @@ input[type="range"]::-moz-range-thumb{
     <div class="section">
       <div class="section-header" onclick="toggleSection(this)">Pie de Página</div>
       <div class="section-content">
-        <label>Logo Footer URL</label>
-        <input type="url" id="footerLogoUrl" placeholder="https://..." oninput="updateFooterLogo(this.value)">
+        <label>Logo Footer (URL o local)</label>
+        <div class="file-input-wrapper">
+          <input type="file" id="footerLogoFile" accept="image/*" onchange="loadFooterLogoFile(this)">
+          <label for="footerLogoFile" class="file-btn">📁 Subir logo footer</label>
+        </div>
+        <input type="url" id="footerLogoUrl" value="https://detroitbcn.com/Logo%20Detroit%20club-OSW-01.png" oninput="updateFooterLogo(this.value)" style="margin-top:8px">
+        
         <label>Texto Footer</label>
-        <textarea id="footerText" rows="3" style="width:100%;background:#000;border:1px solid #222;color:#fff;padding:10px;border-radius:4px;font-family:Montserrat;resize:vertical;" oninput="updateFooterText(this.value)">ENTRADAS EN WWW.CLUB.COM
+        <textarea id="footerText" rows="3" style="width:100%;background:#000;border:1px solid #222;color:#fff;padding:10px;border-radius:4px;font-family:Montserrat;resize:vertical;" oninput="updateFooterText(this.value)">ENTRADAS EN DETROITBCN.COM
 CONSUMICIÓN OBLIGATORIA</textarea>
         <label>Interlineado <span class="range-value" id="footerLineHeightVal">1.6</span></label>
         <input type="range" id="footerLineHeight" min="1" max="3" step="0.1" value="1.6" oninput="updateFooterLineHeight(this.value)">
@@ -782,12 +960,17 @@ CONSUMICIÓN OBLIGATORIA</textarea>
           <div id="posterBgColor" style="width:100%;height:100%;background:linear-gradient(135deg,#1a1a2e 0%,#16213e 50%,#0f3460 100%)"></div>
         </div>
         
-        <!-- WATERMARK -->
-        <div class="poster-layer watermark-layer" id="watermarkLayer" style="display:none;">
-          <img id="watermarkImg" src="" style="width:100%;height:100%;object-fit:contain;opacity:0.1;">
+        <!-- OVERLAY PERSONALIZADO -->
+        <div class="custom-overlay" id="customOverlay" style="display:none;">
+          <img id="customOverlayImg" src="" style="width:100%;height:100%;object-fit:cover;">
         </div>
 
-        <!-- OVERLAYS -->
+        <!-- WATERMARK TOP-LEFT -->
+        <div class="watermark-topleft size-m" id="watermarkTopLeft" style="display:none;">
+          <img id="watermarkImg" src="" style="width:100%;height:auto;">
+        </div>
+
+        <!-- OVERLAYS ESTÁNDAR -->
         <div class="poster-layer overlay-layer">
           <div class="grain-overlay" id="grainOverlay" style="display:none;"></div>
           <div class="vignette-overlay" id="vignetteOverlay"></div>
@@ -798,7 +981,7 @@ CONSUMICIÓN OBLIGATORIA</textarea>
         <div class="content-layer">
           <div class="poster-header">
             <img id="mainLogo" class="main-logo" src="" style="display:none;">
-            <div class="club-name" id="posterClubName">CLUB NAME</div>
+            <div class="club-name" id="posterClubName">DETROIT</div>
             <div class="info-strip">
               <span id="posterDate">VIERNES 15 NOV</span>
               <span class="info-separator">•</span>
@@ -809,7 +992,7 @@ CONSUMICIÓN OBLIGATORIA</textarea>
           </div>
 
           <div class="event-title-container">
-            <div class="event-title" id="posterTitle">BLACKOUT</div>
+            <div class="event-title" id="posterTitle">AARON BLEEK</div>
           </div>
 
           <div class="lineup-container" id="lineupContainer">
@@ -817,8 +1000,8 @@ CONSUMICIÓN OBLIGATORIA</textarea>
           </div>
 
           <div class="poster-footer" id="posterFooter">
-            <img id="footerLogo" class="footer-logo-img" src="" style="display:none;">
-            <div id="footerTextContent">ENTRADAS EN WWW.CLUB.COM<br>CONSUMICIÓN OBLIGATORIA</div>
+            <img id="footerLogo" class="footer-logo-img" src="https://detroitbcn.com/Logo%20Detroit%20club-OSW-01.png" style="display:block;">
+            <div id="footerTextContent">ENTRADAS EN DETROITBCN.COM<br>CONSUMICIÓN OBLIGATORIA</div>
           </div>
         </div>
       </div>
@@ -829,16 +1012,20 @@ CONSUMICIÓN OBLIGATORIA</textarea>
 <script>
 // ESTADO
 let artists = [
-  {name:'ARTISTA PRINCIPAL', size:'size-xl', align:'center', margin:0, opacity:1},
+  {name:'AARON BLEEK', size:'size-3xl', align:'center', margin:0, opacity:1},
   {name:'B2B SET', size:'size-l', align:'center', margin:0, opacity:0.9},
   {name:'ARTISTA LOCAL', size:'size-m', align:'center', margin:0, opacity:0.8}
 ];
 let draggedIndex = null;
+let glitchState = {title:false, artists:false};
 
 // INICIALIZAR
 function init(){
   renderArtists();
   updateAllColors();
+  // Load default footer logo
+  document.getElementById('footerLogo').src = "https://detroitbcn.com/Logo%20Detroit%20club-OSW-01.png";
+  document.getElementById('footerLogo').style.display = 'block';
 }
 init();
 
@@ -878,18 +1065,95 @@ function updateBgBlur(v){
   document.getElementById('posterBg').style.filter = `blur(${v}px)`;
 }
 
+// MARCA DE AGUA
+function toggleWatermark(show){
+  document.getElementById('watermarkTopLeft').style.display = show ? 'block' : 'none';
+}
+function loadWatermarkFile(input){
+  if(input.files && input.files[0]){
+    const reader = new FileReader();
+    reader.onload = function(e){
+      document.getElementById('watermarkImg').src = e.target.result;
+      document.getElementById('watermarkTopLeft').style.display = 'block';
+      document.getElementById('showWatermark').checked = true;
+    };
+    reader.readAsDataURL(input.files[0]);
+  }
+}
+function updateWatermarkUrl(url){
+  if(url){
+    document.getElementById('watermarkImg').src = url;
+    document.getElementById('watermarkTopLeft').style.display = 'block';
+    document.getElementById('showWatermark').checked = true;
+  }
+}
+function setWatermarkSize(size){
+  const wm = document.getElementById('watermarkTopLeft');
+  wm.classList.remove('size-s','size-m','size-l');
+  wm.classList.add(size);
+  // Update active button
+  event.target.parentElement.querySelectorAll('.format-btn').forEach(b=>b.classList.remove('active'));
+  event.target.classList.add('active');
+}
+function updateWatermarkOpacity(v){
+  document.getElementById('watermarkOpacityVal').textContent = v+'%';
+  document.documentElement.style.setProperty('--watermark-opacity', v/100);
+}
+function updateWatermarkPos(x, y){
+  const wm = document.getElementById('watermarkTopLeft');
+  if(x !== null){
+    document.getElementById('watermarkXVal').textContent = x+'px';
+    wm.style.left = x+'px';
+  }
+  if(y !== null){
+    document.getElementById('watermarkYVal').textContent = y+'px';
+    wm.style.top = y+'px';
+  }
+}
+
+// OVERLAY PERSONALIZADO
+function toggleCustomOverlay(show){
+  document.getElementById('customOverlay').style.display = show ? 'block' : 'none';
+}
+function loadOverlayFile(input){
+  if(input.files && input.files[0]){
+    const reader = new FileReader();
+    reader.onload = function(e){
+      document.getElementById('customOverlayImg').src = e.target.result;
+      document.getElementById('customOverlay').style.display = 'block';
+      document.getElementById('showCustomOverlay').checked = true;
+    };
+    reader.readAsDataURL(input.files[0]);
+  }
+}
+function updateOverlayUrl(url){
+  if(url){
+    document.getElementById('customOverlayImg').src = url;
+    document.getElementById('customOverlay').style.display = 'block';
+    document.getElementById('showCustomOverlay').checked = true;
+  }
+}
+function updateOverlayOpacity(v){
+  document.getElementById('overlayOpacityVal').textContent = v+'%';
+  document.documentElement.style.setProperty('--overlay-opacity', v/100);
+}
+function updateOverlayBlend(mode){
+  document.documentElement.style.setProperty('--overlay-blend', mode);
+}
+
 // TIPOGRAFÍA
 function updateMainFont(fontClass){
   const poster = document.getElementById('poster');
-  // Remove old font classes
-  const fonts = ['font-anton','font-bebas','font-oswald','font-playfair','font-poppins','font-raleway','font-inter','font-roboto-cond','font-dm-sans','font-space-grotesk','font-syne','font-clash','font-archivo','font-chakra','font-montserrat'];
+  const fonts = ['font-anton','font-bebas','font-oswald','font-playfair','font-poppins','font-raleway','font-inter','font-roboto-cond','font-dm-sans','font-space-grotesk','font-syne','font-archivo','font-chakra','font-montserrat'];
   fonts.forEach(f => {
     poster.querySelectorAll('.'+f).forEach(el => el.classList.remove(f));
   });
-  // Apply to club, title, artists
   document.getElementById('posterClubName').classList.add(fontClass);
   document.getElementById('posterTitle').classList.add(fontClass);
   document.querySelectorAll('.artist-name').forEach(el => el.classList.add(fontClass));
+  // Re-apply glitch if active
+  if(glitchState.title) applyGlitch(document.getElementById('posterTitle'), true);
+  if(glitchState.artists) document.querySelectorAll('.artist-name').forEach(el => applyGlitch(el, true));
 }
 
 function updateSecondaryFont(font){
@@ -919,9 +1183,6 @@ function updateAccentColor(hex){
   document.getElementById('accentColorHex').textContent = hex.toUpperCase();
   document.documentElement.style.setProperty('--accent', hex);
   document.querySelectorAll('.info-separator').forEach(el => el.style.color = hex);
-  document.querySelectorAll('input[type="range"]::-webkit-slider-thumb').forEach(el => {
-    // Dynamic accent update via CSS var already handled
-  });
   document.documentElement.style.setProperty('--accent-dark', adjustBrightness(hex, -40));
 }
 
@@ -948,7 +1209,7 @@ function updateLogo(url){
   if(url){img.src=url;img.style.display='block';}
   else{img.style.display='none';}
 }
-function updateClubName(v){document.getElementById('posterClubName').textContent=v||'CLUB NAME';}
+function updateClubName(v){document.getElementById('posterClubName').textContent=v||'DETROIT';}
 function updateClubSize(v){
   document.getElementById('clubSizeVal').textContent=v+'px';
   document.getElementById('posterClubName').style.fontSize=v+'px';
@@ -958,7 +1219,7 @@ function updateEventTime(v){document.getElementById('posterTime').textContent=v;
 function updateEventLocation(v){document.getElementById('posterLocation').textContent=v;}
 
 // TÍTULO
-function updateEventTitle(v){document.getElementById('posterTitle').textContent=v||'BLACKOUT';}
+function updateEventTitle(v){document.getElementById('posterTitle').textContent=v||'AARON BLEEK';}
 function updateTitleSize(v){
   document.getElementById('titleSizeVal').textContent=v+'px';
   document.getElementById('posterTitle').style.fontSize=v+'px';
@@ -972,6 +1233,41 @@ function updateTitleAlign(v){
   el.classList.remove('align-left','align-right');
   if(v==='left')el.classList.add('align-left');
   if(v==='right')el.classList.add('align-right');
+}
+
+// GLITCH EFFECT
+function toggleGlitch(target, active){
+  glitchState[target] = active;
+  if(target === 'title'){
+    const el = document.getElementById('posterTitle');
+    applyGlitch(el, active);
+  } else if(target === 'artists'){
+    document.querySelectorAll('.artist-name').forEach(el => applyGlitch(el, active));
+  }
+}
+
+function applyGlitch(element, active){
+  if(!element) return;
+  const text = element.textContent;
+  if(active){
+    if(!element.classList.contains('glitch-wrapper')){
+      const originalHTML = element.innerHTML;
+      element.dataset.original = originalHTML;
+      element.classList.add('glitch-wrapper');
+      element.innerHTML = `
+        <span class="glitch-main">${text}</span>
+        <span class="glitch-clone c1" aria-hidden="true">${text}</span>
+        <span class="glitch-clone c2" aria-hidden="true">${text}</span>
+        <span class="glitch-clone c3" aria-hidden="true">${text}</span>
+      `;
+    }
+  } else {
+    if(element.classList.contains('glitch-wrapper')){
+      element.classList.remove('glitch-wrapper');
+      if(element.dataset.original) element.innerHTML = element.dataset.original;
+      else element.textContent = text;
+    }
+  }
 }
 
 // LINEUP
@@ -1057,6 +1353,9 @@ function renderArtists(){
     nameEl.addEventListener('dragstart',()=>{nameEl.classList.add('dragging');draggedIndex=i;});
     nameEl.addEventListener('dragend',()=>nameEl.classList.remove('dragging'));
     lineup.appendChild(nameEl);
+    
+    // Apply glitch if active
+    if(glitchState.artists) applyGlitch(nameEl, true);
   });
 }
 
@@ -1085,10 +1384,26 @@ function drop(i){
 }
 
 // PIE
+function loadFooterLogoFile(input){
+  if(input.files && input.files[0]){
+    const reader = new FileReader();
+    reader.onload = function(e){
+      const img = document.getElementById('footerLogo');
+      img.src = e.target.result;
+      img.style.display = 'block';
+      document.getElementById('footerLogoUrl').value = '';
+    };
+    reader.readAsDataURL(input.files[0]);
+  }
+}
 function updateFooterLogo(url){
   const img = document.getElementById('footerLogo');
   if(url){img.src=url;img.style.display='block';}
-  else{img.style.display='none';}
+  else{
+    // Default to detroitbcn
+    img.src = "https://detroitbcn.com/Logo%20Detroit%20club-OSW-01.png";
+    img.style.display = 'block';
+  }
 }
 function updateFooterText(v){
   document.getElementById('footerTextContent').innerHTML = v.replace(/\n/g,'<br>');
